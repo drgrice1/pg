@@ -174,14 +174,14 @@ sub SET_PROBLEM_TEXTDIRECTION {
 }
 
 # Request that the problem HTML page also include additional CSS files
-# from the webwork2/htdocs/css/ directory.
+# from the webwork2/htdocs/ directory.
 sub ADD_CSS_FILE {
   my $file = shift;
   push(@{$PG->{flags}{extra_css_files}}, $file);
 }
 
 # Request that the problem HTML page also include additional JS files.
-# If local is 1 the given file name will be prefixed with the webwork2/htdocs/js/ directory,
+# If local is 1 the given file name will be prefixed with the webwork2/htdocs/ directory,
 # otherwise it is assumed the full url is provided.
 sub ADD_JS_FILE {
 	my ($file, $local) = @_;
