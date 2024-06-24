@@ -35,6 +35,7 @@ sub new {
 		unique_id    => undef,
 		path         => undef,                           # complete file path to resource
 		uri          => undef,                           # URL path (or complete file path for TeX) to resource
+		validURI     => 0,                               # False if resource is a file that is not found
 		%options
 	}, $class;
 
@@ -92,6 +93,12 @@ sub fileName {
 	my ($self, $fileName) = @_;
 	$self->{id} = $fileName if $fileName;
 	return $self->{id};
+}
+
+sub validURI {
+	my ($self, $validURI) = @_;
+	$self->{validURI} = $validURI if defined $validURI;
+	return $self->{validURI};
 }
 
 1;

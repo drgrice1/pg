@@ -2930,9 +2930,14 @@ sub image {
 			$out =
 				qq!<IMG SRC="$imageURL" class="image-view-elt $valign" tabindex="0" role="button"$width_attrib$height_attrib $out_options{extra_html_tags} $altattrib>!;
 		} elsif ($displayMode eq 'PTX') {
+			my $validURI = get_resource($image_item)->validURI;
+
 			my $ptxwidth = ($width ? int($width / 6) : 80);
 			if (defined $alt) {
-				$out = qq!<image width="$ptxwidth%" source="$imageURL"><description>$alt</description></image>!;
+				$out =
+					qq!<image width="$ptxwidth%" source="$imageURL"!
+					. ($validURI ? '' : 'valid_uri="false"')
+					. qq!><description>$alt</description></image>!;
 			} else {
 				$out = qq!<image width="$ptxwidth%" source="$imageURL" />!;
 			}

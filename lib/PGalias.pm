@@ -139,6 +139,7 @@ sub alias_for_html {
 	if ($aux_file_id =~ /https?:/) {
 		# External URL.
 		$resource_object->uri($aux_file_id);
+		$resource_object->validURI(1);
 		return $resource_object->uri;    # External URLs need no further processing.
 	}
 
@@ -158,9 +159,13 @@ sub alias_for_html {
 		$aux_file_id =~ m|^/| ? $aux_file_id : $self->find_file_in_directories($aux_file_id, \@aux_files_directories);
 
 	unless ($file_path) {
+		$resource_object->uri($aux_file_id);
+		$resource_object->validURI(0);
 		$self->warning_message(qq{Unable to find file "$aux_file_id".});
-		return;
+		return $resource_object->uri;
 	}
+
+	$resource_object->validURI(1);
 
 	# Store the complete path to the original file, and calculate and store the URI (which is a URL suitable for the
 	# browser relative to the current site).
