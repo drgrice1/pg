@@ -7,10 +7,11 @@
 	<title><%= $filename %></title>
 
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.11/lib/codemirror.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.11/addon/runmode/runmode-standalone.min.js" defer>
+	<script
+		src="https://cdn.jsdelivr.net/npm/@openwebwork/pg-codemirror-editor@0.0.1-beta.26/dist/pg-codemirror-editor.js"
+		defer
+	>
 	</script>
-	<script src="<%= $pg_doc_home %>/PG.js" defer></script>
 	<link rel="stylesheet" href="<%= $pg_doc_home %>/sample-problem.css" >
 </head>
 
@@ -81,7 +82,8 @@
 							<path fill-rule="evenodd" d="M10 1.5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1Zm-5 0A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5v1A1.5 1.5 0 0 1 9.5 4h-3A1.5 1.5 0 0 1 5 2.5v-1Zm-2 0h1v1A2.5 2.5 0 0 0 6.5 5h3A2.5 2.5 0 0 0 12 2.5v-1h1a2 2 0 0 1 2 2V14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3.5a2 2 0 0 1 2-2Z"/>
 						</svg>
 					</button>
-					<pre class="CodeMirror cm-s-default m-0 h-100 p-3 border border-secondary overflow-x-scroll"><%== $_->{code} %></pre>
+					<pre class="PGCodeMirror m-0 h-100 p-3 border border-secondary overflow-x-scroll"><%== $_->{code} %>
+					</pre>
 				</div>
 				<div class="explanation <%= $_->{section} %> col-sm-12 col-md-6 order-md-last order-first p-3 border border-dark">
 					<p><b><%= ucfirst($_->{section}) %></b></p>
@@ -96,12 +98,13 @@
 	</div>
 
 	<script type="module">
-		for (const pre of document.body.querySelectorAll('pre.CodeMirror')) {
-			CodeMirror.runMode(pre.textContent, 'PG', pre);
+		for (const pre of document.body.querySelectorAll('pre.PGCodeMirror')) {
+			PGCodeMirrorEditor.runMode(pre.textContent, pre);
 		}
 
 		for (const btn of document.querySelectorAll('.clipboard-btn')) {
-			if (navigator.clipboard) btn.addEventListener('click', () => navigator.clipboard.writeText(btn.dataset.code));
+			if (navigator.clipboard)
+				btn.addEventListener('click', () => navigator.clipboard.writeText(btn.dataset.code));
 			else btn?.remove();
 		}
 	</script>
