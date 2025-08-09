@@ -44,7 +44,7 @@
 			// Make a click on the popover header close the popover.
 			feedbackPopover.tip?.querySelector('.btn-close')?.addEventListener('click', () => feedbackPopover.hide());
 
-			if (feedbackPopover.tip) feedbackPopover.tip.dataset.iframeHeight = '1';
+			if (feedbackPopover.tip) feedbackPopover.tip.dataset.iframeSize = '1';
 
 			const revealCorrectBtn = feedbackPopover.tip?.querySelector('.reveal-correct-btn');
 			if (revealCorrectBtn && feedbackPopover.correctRevealed) {

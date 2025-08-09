@@ -198,7 +198,7 @@ window.graphTool = (containerId, options) => {
 			}
 
 			if (this.visProp.useunicodeminus) labelText = labelText.replace(/-/g, '\u2212');
-			return addTeXDelims ?? this.visProp.label.usemathjax ? `\\(${labelText}\\)` : labelText;
+			return (addTeXDelims ?? this.visProp.label.usemathjax) ? `\\(${labelText}\\)` : labelText;
 		};
 
 		gt.board.defaultAxes.x.defaultTicks.generateLabelText = generateLabelText;
@@ -1780,7 +1780,7 @@ window.graphTool = (containerId, options) => {
 		if (!gt.helpEnabled) gt.messageBox.classList.add('gt-disabled-help');
 		gt.messageBox.setAttribute('role', 'region');
 		gt.messageBox.setAttribute('aria-live', 'polite');
-		gt.messageBox.dataset.iframeHeight = '1';
+		gt.messageBox.dataset.iframeSize = '1';
 		gt.graphContainer.append(gt.messageBox);
 		gt.messageBox.addEventListener('keydown', (e) => {
 			if (e.key === 'Escape') gt.confirm.dispose?.(e);

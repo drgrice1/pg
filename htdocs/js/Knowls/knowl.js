@@ -31,7 +31,7 @@
 				'modal-dialog-centered',
 				'modal-dialog-scrollable'
 			);
-			knowlDialog.dataset.iframeHeight = '1';
+			knowlDialog.dataset.iframeSize = '1';
 			knowl.knowlModal.append(knowlDialog);
 
 			const knowlContent = document.createElement('div');
