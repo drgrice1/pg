@@ -46,7 +46,7 @@ my $macro_locations = { map { basename($_) => ($_ =~ s!$pg_root/macros/!!r) =~ s
 
 my @problem_types = qw(sample technique snippet);
 
-$pod_root .= '/pg/macros';
+$pod_root .= '/macros';
 mkdir $out_dir unless -d $out_dir;
 
 # Build a hash of all PG files for linking.
