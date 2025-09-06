@@ -1,4 +1,4 @@
-package SampleProblemParser;
+package WeBWorK::PG::SampleProblemParser;
 use parent qw(Exporter);
 
 use strict;
@@ -14,28 +14,38 @@ our @EXPORT_OK = qw(parseSampleProblem generateMetadata getSampleProblemCode);
 
 =head1 NAME
 
-SampleProblemParser - Parse the documentation in a sample problem in the /doc
-directory.
+WeBWorK::PG::SampleProblemParser - Parse sample problems and extract metadata,
+documentation, and code.
 
-=head2 C<parseSampleProblem>
+=head2 parseSampleProblem
 
 Parse a PG file with extra documentation comments. The input is the file and a
 hash of global variables:
 
 =over
 
-=item C<metadata>: A reference to a hash which has information (name, directory,
+=item *
+
+C<metadata>: A reference to a hash which has information (name, directory,
 types, subjects, categories) of every sample problem file.
 
-=item C<macro_locations>: A reference to a hash of macros to include as links
-within a problem.
+=item *
 
-=item C<pod_root>: The root directory of the POD.
+C<macro_locations>: A reference to a hash of macros to include as links within a
+problem.
 
-=item C<pg_doc_home>: The url of the pg_doc home.
+=item *
 
-=item C<url_extension>: The html url extension (including the dot) to use for pg
-doc links.  The default is the empty string.
+C<pod_base_url>: The base URL for the POD HTML files.
+
+=item *
+
+C<sample_problem_base_url>: The base URL for the sample problem HTML files.
+
+=item *
+
+C<url_extension>: The html url extension (including the dot) to use for pg doc
+links.  The default is the empty string.
 
 =back
 
@@ -84,8 +94,9 @@ sub parseSampleProblem ($file, %global) {
 				my $url =
 					defined($1)
 					? $1 eq 'POD'
-						? "$global{pod_root}/" . $global{macro_locations}{ $4 // $2 }
-						: "$global{pg_doc_home}/$global{metadata}{$2}{dir}/" . ($2 =~ s/.pg$/$global{url_extension}/r)
+						? "$global{pod_base_url}/" . $global{macro_locations}{ $4 // $2 }
+						: "$global{sample_problem_base_url}/$global{metadata}{$2}{dir}/"
+						. ($2 =~ s/.pg$/$global{url_extension}/r)
 					: $4;
 				$row = $row =~ s/(POD|PROB)?LINK\('(.*?)'\s*(,\s*'(.*)')?\)/[$link_text]($url)/gr;
 			}
@@ -119,7 +130,7 @@ sub parseSampleProblem ($file, %global) {
 	};
 }
 
-=head2 C<generateMetadata>
+=head2 generateMetadata
 
 Build a hash of metadata for all PG files in the given directory.  A reference
 to the hash that is built is returned.
@@ -213,10 +224,10 @@ sub parseMetadata ($path, $problem_dir) {
 	return $metadata;
 }
 
-=head2 C<getSampleProblemCode>
+=head2 getSampleProblemCode
 
 Parse a PG file with extra documentation comments and strip that all out
-returning the clean problem code. This returns the same code that the
+returning the clean problem code. This returns the same code that
 C<parseSampleProblem> returns, except at much less expense as it does not parse
 the documentation, it does not require that the metadata be parsed first, and it
 does not need macro POD information.

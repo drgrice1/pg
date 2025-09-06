@@ -34,10 +34,10 @@ jobs:
       - name: Generate sample problem documentation
         run: |
           perl pg/bin/parse-problem-doc.pl \
-            --problem_dir=/home/runner/work/pg/pg/pg/tutorial/sample-problems \
-            --out_dir=/home/runner/work/pg/pg/documentation/sample-problems \
-            --pod_root=/pg/pod \
-            --pg_doc_home=/pg/sample-problems
+            --problem-dir=/home/runner/work/pg/pg/pg/tutorial/sample-problems \
+            --out-dir=/home/runner/work/pg/pg/documentation/sample-problems \
+            --pod-base-url=/pg/pod \
+            --sample-problem-base-url=/pg/sample-problems
 
       - name: Generate POD
         run: perl pg/bin/generate-pg-pod.pl --output-dir=documentation/pod --base-url=/pg/pod/
