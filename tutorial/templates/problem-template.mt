@@ -10,7 +10,7 @@
 	<script
 		src="https://cdn.jsdelivr.net/npm/@openwebwork/pg-codemirror-editor@0.0.5/dist/pg-codemirror-editor.js"
 		defer></script>
-	<link rel="stylesheet" href="<%= $pg_doc_home %>/sample-problem.css">
+	<link rel="stylesheet" href="<%= $sample_problem_base_url %>/sample-problem.css">
 </head>
 
 % # Default explanations
@@ -30,7 +30,7 @@
 				<p><%= $description %></p>
 			</div>
 			<div class="col text-end">
-				<a href="<%= $pg_doc_home =%>/../">Return to the PG documentation home</a>
+				<a href="<%= $sample_problem_base_url =%>/../">Return to the PG documentation home</a>
 			</div>
 		</div>
 		<div class="row">
@@ -44,7 +44,9 @@
 					<ul>
 						% for my $macro (@{$metadata->{$filename}{macros}}) {
 							% if ($macro_locations->{$macro}) {
-								<li><a href="<%= $pod_root %>/<%= $macro_locations->{$macro} %>"><%= $macro =%></a></li>
+								<li>
+									<a href="<%= $pod_base_url %>/<%= $macro_locations->{$macro} %>"><%= $macro =%></a>
+								</li>
 							% } else {
 								<li class="text-danger"><%= $macro %></li>
 							% }
@@ -58,7 +60,7 @@
 				<ul>
 					% for (@{$metadata->{$filename}{related}}) {
 					<li>
-						<a href="<%= $pg_doc_home =%>/<%= $metadata->{$_}{dir} =%>/<%= $_ =~ s/.pg$//r =%>.html">
+						<a href="<%= $sample_problem_base_url =%>/<%= $metadata->{$_}{dir} =%>/<%= $_ =~ s/.pg$//r =%>.html">
 							<%= $metadata->{$_}{name} =%>
 						</a>
 					</li>
