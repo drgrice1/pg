@@ -961,7 +961,7 @@ sub SOLUTION {
 					. tag(
 						'div',
 						class => 'accordion-collapse collapse',
-						tag('div', class => 'accordion-body', $solution_body)
+						tag('div', class => 'accordion-body overflow-x-auto', $solution_body)
 					)
 			)
 		));
@@ -1003,7 +1003,7 @@ sub HINT {
 					. tag(
 						'div',
 						class => 'accordion-collapse collapse',
-						tag('div', class => 'accordion-body', $hint_body)
+						tag('div', class => 'accordion-body overflow-x-auto', $hint_body)
 					)
 			)
 		));
