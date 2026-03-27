@@ -325,6 +325,8 @@ each rectangle.
         ...
     );
 
+Note that if the C<fill_color> option is set, then C<< fill => 'self' >> is
+automatically set, and so you do not need to specify that option.
 
 =head2 PLOT VECTOR FIELDS
 
