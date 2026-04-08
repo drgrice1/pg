@@ -341,7 +341,7 @@ window.graphTool = (containerId, options) => {
 						el.isDraggable &&
 						el.visPropCalc.visible &&
 						((this.geonextCompatibilityMode &&
-							(JXG.isPoint(el) || el.elementClass === Const.OBJECT_CLASS_TEXT)) ||
+							(JXG.isPoint(el) || el.elementClass === JXG.OBJECT_CLASS_TEXT)) ||
 							!this.geonextCompatibilityMode) &&
 						!el.evalVisProp('fixed')
 					) {
@@ -354,7 +354,7 @@ window.graphTool = (containerId, options) => {
 							this.updateInfobox(el);
 						} else {
 							this.displayInfobox(false);
-							el.setPositionDirectly(Const.COORDS_BY_USER, dir, [0, 0]);
+							el.setPositionDirectly(JXG.COORDS_BY_USER, dir, [0, 0]);
 						}
 
 						this.triggerEventHandlers(['keymove', 'move'], [evt, this.mode]);
