@@ -1,4 +1,4 @@
-/* global JXG */
+/* global JXG, MathJax */
 
 'use strict';
 
@@ -14,6 +14,7 @@ window.graphTool = (containerId, options) => {
 		setTimeout(() => window.graphTool(containerId, options), 100);
 		return;
 	}
+	gt.graphContainer.role = 'application';
 
 	// Semantic color control
 	gt.color = {
@@ -95,9 +96,11 @@ window.graphTool = (containerId, options) => {
 			lastArrow: { size: 7 },
 			straightFirst: false,
 			straightLast: false,
-			fixed: true
+			fixed: true,
+			tabindex: '',
+			aria: { enabled: true, hidden: true, live: 'off' }
 		},
-		grid: { majorStep: [gt.snapSizeX, gt.snapSizeY] },
+		grid: { majorStep: [gt.snapSizeX, gt.snapSizeY], aria: { enabled: true, hidden: true, live: 'off' } },
 		keyboard: {
 			enabled: true,
 			dx: gt.snapSizeX,
@@ -711,15 +714,20 @@ window.graphTool = (containerId, options) => {
 			}, 100);
 		});
 
+	let currentContent = '';
+
 	gt.setMessageText = (content) => {
 		if (gt.confirmationActive || !gt.helpEnabled) return;
 
 		const newMessage = content instanceof Array ? content.join(' ') : content;
 		if (newMessage) {
+			if (currentContent === newMessage) return;
+			currentContent = newMessage;
 			const par = document.createElement('p');
 			par.textContent = newMessage;
 			gt.setMessageContent(par);
 		} else {
+			currentContent = '';
 			gt.setMessageContent();
 		}
 	};
@@ -776,6 +784,14 @@ window.graphTool = (containerId, options) => {
 	};
 
 	gt.pointRegexp = /\( *(-?[0-9]*(?:\.[0-9]*)?), *(-?[0-9]*(?:\.[0-9]*)?) *\)/g;
+
+	gt.pointAria = {
+		enabled: true,
+		label: (p) => `point at ${p.X()}, ${p.Y()}`,
+		roledescription: 'point',
+		live: 'assertive',
+		atomic: true
+	};
 
 	// This returns true if the points p1, p2, and p3 are colinear.
 	// Note that p1 must be an array of two numbers, and p2 and p3 must be JSXGraph points.
@@ -913,6 +929,7 @@ window.graphTool = (containerId, options) => {
 		const point = gt.board.create('point', [gt.snapRound(x, gt.snapSizeX), gt.snapRound(y, gt.snapSizeY)], {
 			snapSizeX: gt.snapSizeX,
 			snapSizeY: gt.snapSizeY,
+			aria: gt.pointAria,
 			...gt.definingPointAttributes()
 		});
 		point.setAttribute({ snapToGrid: true });
@@ -1514,12 +1531,8 @@ window.graphTool = (containerId, options) => {
 		helpText() {
 			return (gt.selectedObj && gt.selectedObj.supportsSolidDash) ||
 				(gt.activeTool && gt.activeTool.supportsSolidDash)
-				? 'Use the ' +
-						'\\(\\rule[3px]{34px}{2px}\\) or ' +
-						'\\(\\rule[3px]{3px}{2px}' +
-						'\\hspace{4px}\\rule[3px]{4px}{2px}'.repeat(3) +
-						'\\hspace{4px}\\rule[3px]{3px}{2px}\\)' +
-						' button or type s or d to make the selected object solid or dashed.'
+				? 'Use the solid line or dashed line buttons or type s or d to ' +
+						'make the selected object solid or dashed.'
 				: '';
 		}
 	}

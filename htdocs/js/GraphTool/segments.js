@@ -1,4 +1,4 @@
-/* global graphTool */
+/* global graphTool, JXG */
 
 'use strict';
 
@@ -59,6 +59,13 @@
 								0.5 / Math.sqrt(gt.board.unitX * gt.board.unitY)
 						);
 					}
+
+					static ariaLabel(l) {
+						return (
+							(l.getAttribute('dash') == 0 ? 'solid' : 'dashed') +
+							` segment between ${l.point1.X()}, ${l.point1.Y()} and ${l.point2.X()}, ${l.point2.Y()}`
+						);
+					}
 				};
 			},
 
@@ -96,6 +103,14 @@
 					constructor(point1, point2, solid) {
 						super(point1, point2, solid);
 						this.baseObj.setArrow(false, { type: 1, size: 4 });
+					}
+
+					static ariaLabel(l) {
+						return (
+							(l.getAttribute('dash') == 0 ? 'solid' : 'dashed') +
+							` vector with initial point ${l.point1.X()}, ${l.point1.Y()} ` +
+							`and terminal point ${l.point2.X()}, ${l.point2.Y()}`
+						);
 					}
 				};
 			},

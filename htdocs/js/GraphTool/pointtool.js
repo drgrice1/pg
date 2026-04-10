@@ -23,7 +23,8 @@
 							fixed: gt.isStatic,
 							highlightStrokeColor: gt.color.underConstruction,
 							highlightFillColor: gt.color.pointHighlight,
-							tabindex: gt.isStatic ? -1 : 0
+							tabindex: gt.isStatic ? -1 : 0,
+							aria: gt.pointAria
 						})
 					);
 
@@ -160,7 +161,9 @@
 							highlight: false,
 							snapSizeX: gt.snapSizeX,
 							snapSizeY: gt.snapSizeY,
-							withLabel: false
+							withLabel: false,
+							tabindex: 0,
+							aria: gt.pointAria
 						});
 						this.hlObjs.hl_point.rendNode.focus();
 					}
