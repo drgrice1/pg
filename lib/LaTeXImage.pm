@@ -36,6 +36,29 @@ sub new {
 			# be passed to the command line in the system call it is used in.
 			if ($field eq 'ext') {
 				$data->{ext} = $value if $value && ($value =~ /^(png|gif|svg|pdf|tgz)$/);
+			} elsif ($field eq 'convertOptions') {
+				if (ref $value eq 'HASH') {
+					# Validate convertOptions keys and values to prevent shell injection.
+					# Only alphanumeric option names and simple values are permitted.
+					my $options = { input => {}, output => {} };
+					for my $phase (keys %$options) {
+						next unless ref $value->{$phase} eq 'HASH';
+						for my $key (keys %{ $value->{$phase} }) {
+							unless ($key =~ /^[a-zA-Z][a-zA-Z0-9\-]*$/) {
+								warn "Invalid convert option name: $key";
+								next;
+							}
+							unless (defined $value->{$phase}{$key}
+								&& $value->{$phase}{$key} =~ /^[a-zA-Z0-9.\-+:x%]+$/)
+							{
+								warn "Invalid convert option value for $key";
+								next;
+							}
+							$options->{$phase}{$key} = $value->{$phase}{$key};
+						}
+					}
+					$data->{convertOptions} = $options;
+				}
 			} else {
 				$data->{$field} = $value;
 			}
@@ -277,11 +300,10 @@ sub use_svgMethod {
 	# Validate svgMethod against known SVG converters to prevent command injection.
 	my $method = $self->svgMethod;
 	if ($method eq 'dvisvgm') {
-		my $cmd = WeBWorK::PG::IO::externalCommand('dvisvgm');
-		system {$cmd} $cmd, "$working_dir/image.dvi", '--no-fonts', "--output=$working_dir/image.svg";
+		system WeBWorK::PG::IO::externalCommand('dvisvgm'), "$working_dir/image.dvi", '--no-fonts',
+			"--output=$working_dir/image.svg";
 	} elsif ($method eq 'pdf2svg') {
-		my $cmd = WeBWorK::PG::IO::externalCommand('pdf2svg');
-		system {$cmd} $cmd, "$working_dir/image.pdf", "$working_dir/image.svg";
+		system WeBWorK::PG::IO::externalCommand('pdf2svg'), "$working_dir/image.pdf", "$working_dir/image.svg";
 	} else {
 		warn "Unknown svgMethod '$method'. Must be 'dvisvgm' or 'pdf2svg'.";
 		return;
@@ -294,23 +316,12 @@ sub use_svgMethod {
 sub use_convert {
 	my ($self, $working_dir, $ext) = @_;
 
-	# Validate convertOptions keys and values to prevent shell injection.
-	# Only alphanumeric option names and simple values are permitted.
-	my @args;
-	for my $phase (qw(input output)) {
-		my $opts = $self->convertOptions->{$phase} // {};
-		for my $key (keys %$opts) {
-			warn("Invalid convert option name: $key"), next unless $key =~ /^[a-zA-Z][a-zA-Z0-9\-]*$/;
-			my $val = $opts->{$key};
-			warn("Invalid convert option value for $key"), next unless defined $val && $val =~ /^[a-zA-Z0-9.\-+:x%]+$/;
-			push @args, "-$key", $val;
-		}
-		push @args, "$working_dir/image.pdf" if $phase eq 'input';
-	}
-	push @args, "$working_dir/image.$ext";
-
-	my $convert = WeBWorK::PG::IO::externalCommand('convert');
-	system {$convert} $convert, @args;
+	my $convertOptions = $self->convertOptions;
+	system WeBWorK::PG::IO::externalCommand('convert'),
+		(map { ("-$_" => $convertOptions->{input}{$_}) } keys %{ $convertOptions->{input} }),
+		"$working_dir/image.pdf",
+		(map { ("-$_" => $convertOptions->{output}{$_}) } keys %{ $convertOptions->{output} }),
+		"$working_dir/image.$ext";
 	warn "Failed to generate $ext file." unless -r "$working_dir/image.$ext";
 
 	return;

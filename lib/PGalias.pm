@@ -238,17 +238,27 @@ sub create_link_to_tmp_file {
 	my $linkPath = $self->surePathToTmpFile($link);
 
 	if (-e $resource_object->path) {
-		if (-e $linkPath) {
-			# Destroy the old link.
-			unlink($linkPath) or $self->warning_message(qq{Unable to unlink alias file at "$linkPath".});
-		}
+		if (WeBWorK::PG::IO::path_is_subdir(
+			$resource_object->path, $WeBWorK::PG::IO::pg_envir->{directories}{permitted_read_dir}, 1
+		))
+		{
+			if (-e $linkPath) {
+				# Destroy the old link.
+				unlink($linkPath) or $self->warning_message(qq{Unable to unlink alias file at "$linkPath".});
+			}
 
-		# Create a new link, and the URI to this link.
-		if (symlink($resource_object->path, $linkPath)) {
-			$resource_object->uri(($self->{tempURL} =~ s|/$||r) . "/$link");
+			# Create a new link, and the URI to this link.
+			if (symlink($resource_object->path, $linkPath)) {
+				$resource_object->uri(($self->{tempURL} =~ s|/$||r) . "/$link");
+			} else {
+				$self->warning_message(
+					qq{The macro alias cannot create a link from "$linkPath"  to "} . $resource_object->path . '"');
+			}
 		} else {
-			$self->warning_message(
-				qq{The macro alias cannot create a link from "$linkPath"  to "} . $resource_object->path . '"');
+			$self->warning_message('Unable to create link to the file "'
+					. $resource_object->path . '" '
+					. 'because it is an unsafe path.');
+
 		}
 	} else {
 		$self->warning_message('Cannot find the file: "'
@@ -270,7 +280,7 @@ sub convert_file_to_png_for_tex {
 	$self->debug_message('convert filePath ', $sourceFilePath, "\n");
 
 	my $conversion_command = WeBWorK::PG::IO::externalCommand('convert');
-	my $returnCode         = system {$conversion_command} $conversion_command, "${sourceFilePath}[0]", $targetFilePath;
+	my $returnCode         = system $conversion_command, "${sourceFilePath}[0]", $targetFilePath;
 	if ($returnCode || !-e $targetFilePath) {
 		$resource_object->warning_message(
 			qq{Failed to convert "$sourceFilePath" to "$targetFilePath" using "$conversion_command": $!});
