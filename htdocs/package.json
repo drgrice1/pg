@@ -13,22 +13,22 @@
 		"prettier-check": "prettier --ignore-path=../.gitignore --check \"**/*.{js,css,scss,html}\" \"../**/*.dist.yml\""
 	},
 	"dependencies": {
-		"@openwebwork/mathquill": "^0.11.1",
+		"@openwebwork/mathquill": "^0.11.2",
 		"jsxgraph": "^1.12.2",
 		"jszip": "^3.10.1",
 		"jszip-utils": "^0.1.0",
-		"plotly.js-dist-min": "^3.1.0",
-		"sortablejs": "^1.15.6"
+		"plotly.js-dist-min": "^3.5.1",
+		"sortablejs": "^1.15.7"
 	},
 	"devDependencies": {
-		"autoprefixer": "^10.4.21",
-		"chokidar": "^4.0.3",
-		"cssnano": "^7.1.0",
-		"postcss": "^8.5.12",
-		"prettier": "^3.6.2",
+		"autoprefixer": "^10.5.0",
+		"chokidar": "^5.0.0",
+		"cssnano": "^8.0.1",
+		"postcss": "^8.5.15",
+		"prettier": "^3.8.3",
 		"rtlcss": "^4.3.0",
-		"sass": "^1.90.0",
-		"terser": "^5.43.1",
+		"sass": "^1.100.0",
+		"terser": "^5.48.0",
 		"yargs": "^18.0.0"
 	},
 	"browserslist": [
