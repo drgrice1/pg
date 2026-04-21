@@ -48,7 +48,7 @@
 
 		const zoomInButton = document.createElement('button');
 		zoomInButton.type = 'button';
-		zoomInButton.classList.add('btn', 'btn-outline-secondary', 'btn-sm', 'zoom-in');
+		zoomInButton.classList.add('btn', 'btn-outline-secondary', 'btn-sm');
 		zoomInButton.setAttribute('aria-label', 'zoom in');
 
 		const zoomInSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -80,8 +80,8 @@
 
 		const zoomOutButton = document.createElement('button');
 		zoomOutButton.type = 'button';
-		zoomOutButton.classList.add('btn', 'btn-outline-secondary', 'btn-sm', 'zoom-in');
-		zoomOutButton.setAttribute('aria-label', 'zoom in');
+		zoomOutButton.classList.add('btn', 'btn-outline-secondary', 'btn-sm');
+		zoomOutButton.setAttribute('aria-label', 'zoom out');
 
 		const zoomOutSVG = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		zoomOutSVG.setAttribute('width', 16);
