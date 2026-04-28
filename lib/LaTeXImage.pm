@@ -36,6 +36,29 @@ sub new {
 			# be passed to the command line in the system call it is used in.
 			if ($field eq 'ext') {
 				$data->{ext} = $value if $value && ($value =~ /^(png|gif|svg|pdf|tgz)$/);
+			} elsif ($field eq 'convertOptions') {
+				if (ref $value eq 'HASH') {
+					# Validate convertOptions keys and values to prevent shell injection.
+					# Only alphanumeric option names and simple values are permitted.
+					my $options = { input => {}, output => {} };
+					for my $phase (keys %$options) {
+						next unless ref $value->{$phase} eq 'HASH';
+						for my $key (keys %{ $value->{$phase} }) {
+							unless ($key =~ /^[a-zA-Z][a-zA-Z0-9\-]*$/) {
+								warn "Invalid convert option name: $key";
+								next;
+							}
+							unless (defined $value->{$phase}{$key}
+								&& $value->{$phase}{$key} =~ /^[a-zA-Z0-9.\-+:x%]+$/)
+							{
+								warn "Invalid convert option value for $key";
+								next;
+							}
+							$options->{$phase}{$key} = $value->{$phase}{$key};
+						}
+					}
+					$data->{convertOptions} = $options;
+				}
 			} else {
 				$data->{$field} = $value;
 			}
@@ -273,12 +296,17 @@ sub draw {
 
 sub use_svgMethod {
 	my ($self, $working_dir) = @_;
-	if ($self->svgMethod eq 'dvisvgm') {
-		system WeBWorK::PG::IO::externalCommand('dvisvgm')
-			. " $working_dir/image.dvi --no-fonts --output=$working_dir/image.svg > /dev/null 2>&1";
+
+	# Validate svgMethod against known SVG converters to prevent command injection.
+	my $method = $self->svgMethod;
+	if ($method eq 'dvisvgm') {
+		system WeBWorK::PG::IO::externalCommand('dvisvgm'), "$working_dir/image.dvi", '--no-fonts',
+			"--output=$working_dir/image.svg";
+	} elsif ($method eq 'pdf2svg') {
+		system WeBWorK::PG::IO::externalCommand('pdf2svg'), "$working_dir/image.pdf", "$working_dir/image.svg";
 	} else {
-		system WeBWorK::PG::IO::externalCommand($self->svgMethod)
-			. " $working_dir/image.pdf $working_dir/image.svg > /dev/null 2>&1";
+		warn "Unknown svgMethod '$method'. Must be 'dvisvgm' or 'pdf2svg'.";
+		return;
 	}
 	warn "Failed to generate svg file." unless -r "$working_dir/image.svg";
 
@@ -287,11 +315,13 @@ sub use_svgMethod {
 
 sub use_convert {
 	my ($self, $working_dir, $ext) = @_;
-	system WeBWorK::PG::IO::externalCommand('convert')
-		. join('', map { " -$_ " . $self->convertOptions->{input}->{$_} } (keys %{ $self->convertOptions->{input} }))
-		. " $working_dir/image.pdf"
-		. join('', map { " -$_ " . $self->convertOptions->{output}->{$_} } (keys %{ $self->convertOptions->{output} }))
-		. " $working_dir/image.$ext > /dev/null 2>&1";
+
+	my $convertOptions = $self->convertOptions;
+	system WeBWorK::PG::IO::externalCommand('convert'),
+		(map { ("-$_" => $convertOptions->{input}{$_}) } keys %{ $convertOptions->{input} }),
+		"$working_dir/image.pdf",
+		(map { ("-$_" => $convertOptions->{output}{$_}) } keys %{ $convertOptions->{output} }),
+		"$working_dir/image.$ext";
 	warn "Failed to generate $ext file." unless -r "$working_dir/image.$ext";
 
 	return;
