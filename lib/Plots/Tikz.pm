@@ -19,8 +19,11 @@ sub new {
 	$image->svgMethod(eval('$main::envir{latexImageSVGMethod}')           // 'dvisvgm');
 	$image->convertOptions(eval('$main::envir{latexImageConvertOptions}') // { input => {}, output => {} });
 	$image->ext($plots->ext);
-	$image->tikzLibraries('arrows.meta,plotmarks,calc,spath3');
-	$image->texPackages(['pgfplots']);
+	$image->texPackages([ 'amsmath', 'pgfplots', @{ $plots->{texPackages} } ]);
+
+	my $tikzLibraries = 'arrows.meta,plotmarks,calc,spath3';
+	$tikzLibraries .= ',' . join(',', @{ $plots->{tikzLibraries} }) if @{ $plots->{tikzLibraries} };
+	$image->tikzLibraries($tikzLibraries);
 
 	# Set the pgfplots compatibility, add the pgfplots fillbetween library, define a save
 	# box that is used to wrap the axes in a nice rectangle frame with a white background, and redefine
