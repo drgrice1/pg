@@ -194,9 +194,9 @@ sub cmp_collect {
 	return 1 unless $self->{ans_name};
 	$ans->{preview_latex_string} = $ans->{preview_text_string} = "";
 	my $OK = $self->ans_collect($ans);
-	$ans->{student_ans} = $self->format_matrix($ans->{student_formula}, @{ $self->{format_options} }, tth_delims => 1);
+	$ans->{student_ans} = $self->format_matrix($ans->{student_array}, @{ $self->{format_options} }, tth_delims => 1);
 	return 0 unless $OK;
-	my $array = $ans->{student_formula};
+	my $array = $ans->{student_array};
 
 	if ($self->{ColumnVector}) {
 		my @V = ();
@@ -728,8 +728,9 @@ sub ans_collect {
 		}
 		push(@array, [@row]);
 	}
-	$ans->{student_formula} = [@array];
-	$ans->{ans_message}     = $ans->{error_message} = "";
+	delete $ans->{student_formula};
+	$ans->{student_array} = [@array];
+	$ans->{ans_message}   = $ans->{error_message} = '';
 	if (scalar(@{$errors})) {
 		$ans->{ans_message} = $ans->{error_message} =
 			'<TABLE BORDER="0" CELLSPACING="0" CELLPADDING="0" CLASS="ArrayLayout">'
