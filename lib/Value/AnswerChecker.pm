@@ -295,7 +295,7 @@ sub cmp_list_compare { Value::List::cmp_list_compare(@_) }
 sub typeMatch {
 	my $self  = shift;
 	my $other = shift;
-	return 1 unless ref($other);
+	return 1 unless Value::isValue($other);
 	$self->type eq $other->type && !$other->isFormula;
 }
 
@@ -852,7 +852,7 @@ sub typeMatch {
 	my $self  = shift;
 	my $other = shift;
 	my $ans   = shift;
-	return 1 unless ref($other);
+	return 1 unless Value::isValue($other);
 	return 0 if Value::isFormula($other);
 	return 1 if $other->type eq 'Infinity' && $ans->{ignoreInfinity};
 	$self->type eq $other->type;
@@ -868,7 +868,7 @@ sub typeMatch {
 	my $self  = shift;
 	my $other = shift;
 	my $ans   = shift;
-	return 1 unless ref($other);
+	return 1 unless Value::isValue($other);
 	return 0 if Value::isFormula($other);
 	return 1 if $other->type eq 'Number';
 	$self->type eq $other->type;
@@ -996,7 +996,7 @@ sub typeMatch {
 	my $self  = shift;
 	my $other = shift;
 	my $ans   = shift;
-	return ref($other) && $other->type eq 'Point' && !$other->isFormula;
+	return Value::isValue($other) && $other->type eq 'Point' && !$other->isFormula;
 }
 
 #
@@ -1086,7 +1086,7 @@ sub typeMatch {
 	my $self  = shift;
 	my $other = shift;
 	my $ans   = shift;
-	return 0 unless ref($other) && !$other->isFormula;
+	return 0 unless Value::isValue($other) && !$other->isFormula;
 	return $other->type eq 'Vector'
 		|| ($ans->{promotePoints} && $other->type eq 'Point');
 }
@@ -1214,7 +1214,7 @@ sub typeMatch {
 	my $self  = shift;
 	my $other = shift;
 	my $ans   = shift;
-	return 0 unless ref($other) && !$other->isFormula;
+	return 0 unless Value::isValue($other) && !$other->isFormula;
 	return $other->type eq 'Matrix'
 		|| ($other->type =~ m/^(Point|List)$/
 			&& $other->{open} . $other->{close} eq $self->{open} . $self->{close});
@@ -1440,7 +1440,7 @@ package Value::Union;
 sub typeMatch {
 	my $self  = shift;
 	my $other = shift;
-	return 0 unless ref($other) && !$other->isFormula;
+	return 0 unless Value::isValue($other) && !$other->isFormula;
 	return
 		$other->length == 2
 		&& ($other->{open} eq '('  || $other->{open} eq '[')
@@ -1550,7 +1550,7 @@ sub cmp_defaults {
 #
 #  Match anything but formulas
 #
-sub typeMatch { return !ref($other) || !$other->isFormula }
+sub typeMatch { return !Value::isValue($other) || !$other->isFormula }
 
 #
 #  Handle removal of outermost parens in correct answer.
@@ -1902,7 +1902,7 @@ sub typeMatch {
 	my $self  = shift;
 	my $other = shift;
 	my $ans   = shift;
-	return 1 if $self->type eq $other->type;
+	return 1 if !Value::isValue($other) || $self->type eq $other->type;
 	my $typeMatch = $self->getTypicalValue($self);
 	$other = $self->getTypicalValue($other, 1) if Value::isFormula($other);
 	return 1 unless defined($other);    # can't really tell, so don't report type mismatch
