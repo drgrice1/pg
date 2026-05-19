@@ -62,7 +62,7 @@ use Scalar::Util        qw(blessed);
 use Mojo::Util          qw(md5_sum encode);
 use Env                 qw(PG_ROOT);
 
-use lib curfile->dirname->dirname->dirname->dirname->dirname->child('lib');
+use lib curfile->dirname->dirname->dirname->dirname->dirname->child('lib')->to_string;
 
 require Value;
 
@@ -84,7 +84,7 @@ sub main::Context()                  { return; }
 
 do "$PG_ROOT/macros/core/PGML.pl";
 
-sub walkPGMLTree ($block, $results //= {}) {
+sub walkPGMLTree ($block, $results) {
 	for my $item (@{ $block->{stack} }) {
 		next unless blessed $item && $item->isa('PGML::Block');
 		if ($item->{type} eq 'command') {
