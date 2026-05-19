@@ -2356,7 +2356,7 @@ sub cmp_graph {
 		ymax               => $My,
 		ytick_delta        => ($My - $my) / $graphs->{grid}->[1],
 		yminor             => 0,
-		ytick_label_format => abs($My) < 0.01 ? 'scinot' : 'decimal',
+		ytick_label_format => CORE::abs($My) < 0.01 ? 'scinot' : 'decimal',
 		ylabel             => '\(f\)'
 	);
 	$grf->{size}          = ref($size) eq 'ARRAY' ? { width => $size->[0], height => $size->[1] } : { width => $size };
