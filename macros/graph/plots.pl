@@ -313,20 +313,18 @@ direction.
 
 =head2 PLOT RECTANGLES
 
-A rectangle can be plotted with the C<< $plot->add_rectangle >> method.  This is a 
-convenience method as a shortcut for the C<< $plot->add_dataset >> method. The first
-two arguments are opposite corners of the rectangle.  All other arguments are passed
-as options to the C<< add_dataset >> method. 
+A rectangle can be plotted with the C<< $plot->add_rectangle >> method. This
+method takes two points which are opposite corners of the rectangle. Multiple
+rectangles can be plotted at once by passing references to arrays of data for
+each rectangle.
 
-The following makes a filled rectangle with a thicker blue border.
-
-    $plot->add_rectangle([2,1], [6,3],
-        color        => 'blue',
-        width        => 1.5,
-        fill         => 'self',
-        fill_color   => 'yellow',
-        fill_opacity => 0.1,
+    $plot->add_rectangle([$lower_left_x, $lower_left_y], [$upper_right_x, $upper_right_y], %options);
+    $plot->add_rectangle(
+        [[$lower_left_x1, $lower_left_y1], [$upper_right_x1, $upper_right_y1], %options1],
+        [[$lower_left_x2, $lower_left_y2], [$upper_right_x2, $upper_right_y2], %options2],
+        ...
     );
+
 
 =head2 PLOT VECTOR FIELDS
 

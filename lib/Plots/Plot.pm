@@ -394,16 +394,22 @@ sub add_arc {
 	return $self->_add_arc(@data);
 }
 
-sub add_rectangle {
+sub _add_rectangle {
 	my ($self, $pt0, $pt2, %options) = @_;
+	unless (ref($pt0) eq 'ARRAY' && @$pt0 == 2 && ref($pt2) eq 'ARRAY' && @$pt2 == 2) {
+		warn 'A rectangle requires two points defined by length two array references.';
+		return;
+	}
+	$options{fill} = 'self' if $options{fill_color} && !defined $options{fill};
+	return $self->_add_dataset($pt0, [ $pt2->[0], $pt0->[1] ], $pt2, [ $pt0->[0], $pt2->[1] ], $pt0, %options);
+}
 
-	Value::Error('The first point must be an array ref of length 2')
-		unless ref($pt0) eq 'ARRAY' && scalar(@$pt0) == 2;
-	Value::Error('The second point must be an array ref of length 2')
-		unless ref($pt2) eq 'ARRAY' && scalar(@$pt2) == 2;
-	# If the fill_color option is set, set the fill to 'self'.
-	$options{fill} = 'self' if $options{fill_color} && !defined($options{fill});
-	return $self->add_dataset($pt0, [ $pt2->[0], $pt0->[1] ], $pt2, [ $pt0->[0], $pt2->[1] ], $pt0, %options);
+sub add_rectangle {
+	my ($self, @data) = @_;
+	if (ref($data[0]) eq 'ARRAY' && ref($data[0][0]) eq 'ARRAY') {
+		return [ map { $self->_add_rectangle(@$_) } @data ];
+	}
+	return $self->_add_rectangle(@data);
 }
 
 sub add_vectorfield {
