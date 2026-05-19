@@ -27,7 +27,7 @@
 			this.removeButtonText = el.dataset.removeButtonText ?? 'Remove';
 			this.universalSetLabel = el.dataset.universalSetLabel ?? 'Universal Set';
 			this.addFromUniversalText =
-				el.dataset.addFromUnversalText ?? 'Item %1s in the universal set added as item %2s to list %3s.';
+				el.dataset.addFromUniversalText ?? 'Item %1s in the universal set added as item %2s to list %3s.';
 			this.removeUniversalItemText = el.dataset.removeUniversalItemText ?? 'Item %1s removed from list %2s.';
 			this.reorderText = el.dataset.reorderText ?? 'Moved item %1s in list %2s to item %3s.';
 			this.moveText = el.dataset.moveText ?? 'Moved item %1s in list %2s to item %3s in list %4s.';

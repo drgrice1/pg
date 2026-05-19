@@ -75,7 +75,7 @@ Available Options:
     removeButtonText        => <string>
     showUniversalSet        => 0 or 1
     universalSetLabel       => <string>
-    addFromUnversalText     => <string that must contain %1s, %2s, and %3s>
+    addFromUniversalText    => <string that must contain %1s, %2s, and %3s>
     removeUniversalItemText => <string that must contain %1s and %2s>,
     reorderText             => <string that must contain %1s, %s2, and %3s>
     moveText                => <string that must contain %1s, %2s, %3s, and %4s>
@@ -312,7 +312,7 @@ sub ans_rule {
 
 	for my $option (
 		'allowNewBuckets',         'bucketLabelFormat', 'resetButtonText',   'addButtonText',
-		'removeButtonText',        'showUniversalSet',  'universalSetLabel', 'addFromUnversalText',
+		'removeButtonText',        'showUniversalSet',  'universalSetLabel', 'addFromUniversalText',
 		'removeUniversalItemText', 'reorderText',       'moveText',          'helpButtonText',
 		'closeHelpButtonText',     'dragAndDropHelpText'
 		)

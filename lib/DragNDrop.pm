@@ -98,7 +98,7 @@ buckets, but not into it.
 
 Label shown for the universal set bucket if C<showUniversalSet> is 1.
 
-=item addFromUnversalText
+=item addFromUniversalText
 
 The aria announcement text format that is used when a universal set item is
 added to a bucket via keyboard controls. The default format for this text is
@@ -212,18 +212,18 @@ sub new {
 	my $PG = eval('$main::PG');
 
 	return bless {
-		answerName          => $answerName,
-		itemList            => $itemList,
-		defaultBuckets      => $defaultBuckets,
-		allowNewBuckets     => 0,
-		bucketLabelFormat   => undef,
-		resetButtonText     => $PG->maketext('Reset'),
-		addButtonText       => $PG->maketext('Add Bucket'),
-		removeButtonText    => $PG->maketext('Remove'),
-		multicolsWidth      => '300pt',
-		showUniversalSet    => 0,
-		universalSetLabel   => $PG->maketext('Universal Set'),
-		addFromUnversalText =>
+		answerName           => $answerName,
+		itemList             => $itemList,
+		defaultBuckets       => $defaultBuckets,
+		allowNewBuckets      => 0,
+		bucketLabelFormat    => undef,
+		resetButtonText      => $PG->maketext('Reset'),
+		addButtonText        => $PG->maketext('Add Bucket'),
+		removeButtonText     => $PG->maketext('Remove'),
+		multicolsWidth       => '300pt',
+		showUniversalSet     => 0,
+		universalSetLabel    => $PG->maketext('Universal Set'),
+		addFromUniversalText =>
 			$PG->maketext('Item [_1] in the universal set added as item [_2] to list [_3].', '%1s', '%2s', '%3s'),
 		removeUniversalItemText => $PG->maketext('Item [_1] removed from list [_2].', '%1s', '%2s'),
 		reorderText             => $PG->maketext('Moved item [_1] in list [_2] to item [_3].', '%1s', '%2s', '%3s'),
@@ -259,7 +259,7 @@ sub HTML {
 	$out .= qq{ data-label-format="$self->{bucketLabelFormat}"} if $self->{bucketLabelFormat};
 	$out .= " data-show-universal-set"                          if $self->{showUniversalSet};
 	$out .= ' data-universal-set-label="' . PGcore::encode_pg_and_html($self->{universalSetLabel}) . '"';
-	$out .= ' data-add-from-universal-text="' . PGcore::encode_pg_and_html($self->{addFromUnversalText}) . '"';
+	$out .= ' data-add-from-universal-text="' . PGcore::encode_pg_and_html($self->{addFromUniversalText}) . '"';
 	$out .= ' data-remove-universal-item-text="' . PGcore::encode_pg_and_html($self->{removeUniversalItemText}) . '"';
 	$out .= ' data-reorder-text="' . PGcore::encode_pg_and_html($self->{reorderText}) . '"';
 	$out .= ' data-move-text="' . PGcore::encode_pg_and_html($self->{moveText}) . '"';
