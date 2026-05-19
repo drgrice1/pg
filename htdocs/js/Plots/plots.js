@@ -89,13 +89,16 @@ const PGplots = {
 				// Override the default axis generateLabelText method to show custom tick labels if they are set, and so
 				// that 0 is displayed using MathJax if the axis is configured to show tick labels using MathJax.
 				generateLabelText(tick, zero, value) {
-					for (const axis of ['xAxis', 'yAxis']) {
+					for (const [axis, coord] of [
+						['xAxis', 1],
+						['yAxis', 2]
+					]) {
 						if (
 							this === plot[axis]?.defaultTicks &&
 							typeof options[axis]?.ticks?.labels === 'object' &&
-							tick.usrCoords[1] in options[axis].ticks.labels
+							tick.usrCoords[coord] in options[axis].ticks.labels
 						) {
-							return options[axis].ticks.labels[tick.usrCoords[1]];
+							return options[axis].ticks.labels[tick.usrCoords[coord]];
 						}
 					}
 					if (JXG.exists(value)) return this.formatLabelText(value);
