@@ -98,7 +98,19 @@
 							strokeWidth: 2,
 							highlight: false,
 							strokeColor: color ? color : gt.color.underConstruction,
-							dash: solid ? 0 : 2
+							dash: solid ? 0 : 2,
+							tabindex: '',
+							aria: {
+								enabled: true,
+								label: (c) =>
+									(c.getAttribute('dash') == 0 ? 'solid' : 'dashed') +
+									` cubic passing through ${point1.X()}, ${point1.Y()}, and ` +
+									`${point2.X()}, ${point2.Y()}, and ${point3.X()}, ${point3.Y()}, ` +
+									`and ${point4.X()}, ${point4.Y()}`,
+								roledescription: 'cubic',
+								live: 'assertive',
+								atomic: true
+							}
 						}
 					);
 				}
@@ -294,7 +306,9 @@
 							snapSizeX: gt.snapSizeX,
 							snapSizeY: gt.snapSizeY,
 							highlight: false,
-							withLabel: false
+							withLabel: false,
+							tabindex: '',
+							aria: gt.pointAria
 						});
 						this.hlObjs.hl_point.rendNode.focus();
 					}
@@ -341,7 +355,18 @@
 							fixed: true,
 							strokeColor: gt.color.underConstruction,
 							highlight: false,
-							dash: gt.drawSolid ? 0 : 2
+							dash: gt.drawSolid ? 0 : 2,
+							tabindex: '',
+							aria: {
+								enabled: true,
+								label: (l) =>
+									(l.getAttribute('dash') == 0 ? 'solid' : 'dashed') +
+									` line through ${l.point1.X()}, ${l.point1.Y()}, ` +
+									`and ${l.point2.X()}, ${l.point2.Y()}`,
+								roledescription: 'line',
+								live: 'assertive',
+								atomic: true
+							}
 						});
 					}
 
