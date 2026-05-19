@@ -515,15 +515,18 @@ reference to an array of scores (one for each answer).
 
     # this checker will give full credit for any answers
     sub always_right {
-		my ($correct,$student,$multi_ans,$ans_hash) = @_;  # get the parameters
-		return [ (1) x scalar(@$correct) ];                # return an array of scores
+		my ($correct, $student, $multi_ans, $ans_hash) = @_;  # get the parameters
+		return [ (1) x scalar(@$correct) ];                   # return an array of scores
 	}
-	$multianswer_obj = $multianswer_obj->with(checker=>~~&always_right);
+	$multianswer_obj = $multianswer_obj->with(checker => ~~&always_right);
 
 If a C<checker> is not provided, a default checker is used. The default checker checks if each
 answer is equal to its correct answer (using the overloaded C<==> operator). If C<< partialCredit => 1 >>,
 the checker returns an array of 0s and 1s listing which answers are correct giving partial credit.
 If C<< partialCredit => 0 >>, the checker only returns 1 if all answers are correct, otherwise returns 0.
+
+Note that C<< $multi_ans->{scores} >> will be set to a reference to an array containing the the
+scores from evaluating the individual answers and can be used inside the C<checker> routine.
 
 =head2 partialCredit
 
