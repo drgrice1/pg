@@ -571,10 +571,10 @@ window.graphTool = (containerId, options) => {
 				} else if (e.key === 'Escape' && gt.activeTool !== gt.selectTool) {
 					// Escape deactivates any active tool except the select tool.
 					gt.selectTool.activate();
-				} else if (e.key === 'Delete' && e.ctrlKey) {
+				} else if ((e.key === 'Delete' || e.key === 'Backspace') && e.ctrlKey) {
 					// If the Ctrl-Delete is pressed, then ask to delete all objects.
 					gt.clearAll();
-				} else if (e.key === 'Delete' && gt.activeTool === gt.selectTool) {
+				} else if ((e.key === 'Delete' || e.key === 'Backspace') && gt.activeTool === gt.selectTool) {
 					// If the select tool is active and Delete is pressed, then ask to delete the selected object.
 					gt.deleteSelected();
 				}
