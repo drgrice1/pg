@@ -5,8 +5,8 @@ use Perl::Critic::Utils qw(:severities :classification :ppi);
 
 use WeBWorK::PG::Critic::Utils qw(getDeprecatedMacros);
 
-use constant DESCRIPTION => 'The beingproblem function is called';
-use constant EXPLANATION => 'The beingproblem function no longer does anything and should be removed.';
+use constant DESCRIPTION => 'The beginproblem function is called';
+use constant EXPLANATION => 'The beginproblem function no longer does anything and should be removed.';
 use constant SCORE       => 5;
 
 sub supported_parameters ($) {return}
@@ -25,12 +25,12 @@ __END__
 
 =head1 NAME
 
-Perl::Critic::Policy::PG::ProhibitBeginproblem - The C<beingproblem> function is
+Perl::Critic::Policy::PG::ProhibitBeginproblem - The C<beginproblem> function is
 deprecated, no longer does anything, and should be removed from all problems.
 
 =head1 DESCRIPTION
 
-The C<beingproblem> function is deprecated, no longer does anything, and should
+The C<beginproblem> function is deprecated, no longer does anything, and should
 be removed from all problems.
 
 =cut
