@@ -151,8 +151,14 @@ options to cmp when utilizing PGML.
 
 =item checkTypes (Default: checkTypes => 1)
 
-Whether the types of the student and correct answers must match exactly or just pass the usual
-type-match error checking (in which case, you should check the types before you use the data).
+Specifies whether the types of the student and instructor's answers must match and to what extent.
+if C<< checkTypes => 'compatible' >> then the student answers only need to be compatible with the
+instructor answers in the sense that they parse into objects that can be compared to the instructor
+answers. If C<< checkTypes => 1 >> then the types of the student answers must match the types of the
+instructor answers exactly. Otherwise no type checking is done other than the the usual type-match
+error checking (in which case, you should check the types before you use the data). Default: 1.
+Note that if the default checker is used, i.e., if C<checker> is not set, then C<< checkTypes => 1 >>
+is the same as C<< checkTypes => 'compatible' >>.
 
 =item allowBlankAnswers (Default: allowBlankAnswers => 0)
 
@@ -260,7 +266,6 @@ our @ISA = qw(Value Value::String);
 our $answerPrefix = 'RaDiOMuLtIaNsWeR_';    # answer rule prefix
 
 my @ans_defaults = (
-	checker             => sub {0},
 	showCoordinateHints => 0,
 	showEndpointHints   => 0,
 	showEndTypeHints    => 0
@@ -350,16 +355,18 @@ sub cmp {
 	}
 
 	unless (ref($self->{checker}) eq 'CODE') {
+		die "Your checker must be a subroutine." if defined $self->{checker};
 		$self->{checker} = sub {
 			my ($correct, $student, $self, $ans) = @_;
 			return 0 if ($correct->[0] != $student->[0]);
 
 			for (0 .. $#{ $correct->[ $correct->[0] ] }) {
-				return 0 if $correct->[ $correct->[0] ][$_] != $student->[ $correct->[0] ][$_];
+				return 0 unless $self->{ans}[ $correct->[0] - 1 ][$_]{score};
 			}
 
 			return 1;
 		};
+		$self->{checkTypes} = 'compatible' if $self->{checkTypes} && $self->{checkTypes} ne 'exact';
 	}
 
 	if ($self->{allowBlankAnswers}) {
@@ -531,13 +538,18 @@ sub perform_check {
 	my ($self, $rh_ans) = @_;
 	my $context = $self->context;
 	$context->clearError;
-	my @correct;
-	my @student;
+
+	my $checkTypes = $self->{checkTypes};
+	$checkTypes = 'equal' if $checkTypes && $checkTypes ne 'compatible';
+
 	# The answers for all parts are sent to the grader.  The answers in the incorrect parts from
 	# the correct answer may be used in the grader.  The answers for each part are in a separate
 	# list.  The radio answer is sent as the numerical index of the choice.  The count starts at
 	# one, so that it is the location in the list sent to the grader of the answers for the
 	# selected part (the radio answer is in position 0).
+	my @correct;
+	my @student;
+
 	push(@correct, $self->{correct} + 1);
 	push(@student, $self->getIndexByValue($main::inputs_ref->{ $self->ANS_NAME(0) }) + 1);
 	my $part_index = 1;
@@ -551,9 +563,13 @@ sub perform_check {
 			next   if $student[0] != $part_index;
 			return if $ans->{ans_message} ne '' || !defined $ans->{student_value};
 			return
-				if ($self->{checkTypes}
-					&& $ans->{student_value}->type ne $ans->{correct_value}->type
-					&& !($self->{allowBlankAnswers} && $ans->{student_ans} !~ m/\S/));
+				if $checkTypes eq 'equal'
+				&& $ans->{student_value}->type ne $ans->{correct_value}->type
+				&& !($self->{allowBlankAnswers} && $ans->{student_ans} !~ m/\S/);
+			return
+				if $checkTypes eq 'compatible'
+				&& !$ans->{correct_value}->typeMatch($ans->{student_value}, $ans)
+				&& !($self->{allowBlankAnswers} && $ans->{student_ans} !~ m/\S/);
 		}
 		push(@correct, [@part_correct]);
 		push(@student, [@part_student]);
