@@ -1095,8 +1095,8 @@ will generate the elementary matrix of size number of rows of C<$A>, which multi
 
 =item * Multiply a row by a constant and add to another row.
 
-The method C<< Value::Matrix->E(n, [i], k) >> returns the n by n elementary matrix that upon 
-right multiplication will multiply a row C<i>, by constant C<k> and add to row C<j>. 
+The method C<< Value::Matrix->E(n, [ i, j ], k) >> returns the n by n elementary matrix that upon
+right multiplication will replace row C<j> with k times row C<i> added to row C<j>.
 
 Usage:
 
@@ -1113,7 +1113,7 @@ or if the matrix C<$A> exists of size m by n then
 
     $A->E([3, 4], -5);
 
-will generate the m by m elementary matrix which multiplies row 3 by -5 and adds to row 4. 
+will generate the m by m elementary matrix which replaces row 4 by -5 times row 3 added to row 4.
 If C<$A> does not have at least 4 rows, an error is raised.
 
 =back
