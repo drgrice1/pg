@@ -29,10 +29,12 @@ sub new {
 		axes            => Plots::Axes->new,
 		colors          => {},
 		data            => [],
+		texPackages     => [],
+		tikzLibraries   => []
 	}, $class;
 
 	# Besides for these core options, pass everything else to the Axes object.
-	for ('width', 'height', 'tex_size', 'rounded_corners') {
+	for ('width', 'height', 'tex_size', 'rounded_corners', 'texPackages', 'tikzLibraries') {
 		$self->{$_} = delete $options{$_} if $options{$_};
 	}
 	$self->axes->set(%options) if %options;

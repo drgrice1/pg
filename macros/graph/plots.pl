@@ -69,6 +69,19 @@ sharp corners will be used.  If this is set to C<1>, then rounded corners will
 be used. Note that this may not work well for images that have elements of the
 plot near or in the corners.
 
+=item texPackages
+
+This is an array reference of additional TeX packages to use when generating the
+TikZ output. By default this includes "amsmath" and "pgfplots". This is useful
+for adding packages for labels such as "cancel". See L<PGtikz.pl> for details
+on loading packages and options.
+
+=item tikzLibraries
+
+This is an array reference of additional TikZ libraries to include when generating
+the TikZ output. By default this includes "arrows.meta", "plotmarks", "calc",
+and "splath3".
+
 =back
 
 Add a function and other objects to the plot.
