@@ -19,7 +19,7 @@ You will then need to grade the problem manually.  You can explicitly set the
 size of the essay box by specifying the number of rows and columns. Any additional
 arguments will be passed as html attributes of the text area.  For example
 
-    essay_box(8, 60, maxlength=>250)
+    essay_box(8, 60, maxlength => 250)
 
 will produce a text box with 8 rows and 60 columns that has a limit of 250
 characters.
