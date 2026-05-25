@@ -1616,7 +1616,7 @@ sub getWidthPercent {
 sub hrule {
 	my ($booktabs, $type, $thickness) = @_;
 	if ($booktabs) {
-		my $thicknessArg = '';
+		my $thicknessArg = $type eq 'bottom' ? '' : '{}';
 		$thicknessArg = '[' . getLaTeXthickness($thickness) . ']'
 			if ($thickness);
 		return "\\" . $type . 'rule' . $thicknessArg;
