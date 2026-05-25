@@ -113,9 +113,13 @@ Examples:
 
     element : Real/Complex/Fraction value when passed the same number of arguments as the degree of the Matrix.
         If passed more than n arguments, null. If the degree of the Matrix is n and C<element> is passed
-	k arguments with k < n, then this produces the corresponding degree (n-k) tensor.
+        k arguments with k < n, then this produces the corresponding degree (n-k) tensor.
 
 =head3 Update values (these need to be added)
+
+    set(value, [ i, j, ... ])
+        For a degree n matrix, the array reference for the second entry should have n elements.
+        The entry at that location will be replaced with value.
 
     see C<change_matrix_entry()> in MatrixReduce and L<https://wiki.openwebwork.org/moodle/mod/forum/discuss.php?d=2970>
 
@@ -1342,7 +1346,48 @@ sub element {
 	return $M->extract(@_);
 }
 
-# @@@ assign @@@
+=head3 C<set>
+
+Set a specific element to some value.
+
+Usage:
+
+    $A = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ]);
+    $A->set(7, [ 2, 1 ]);
+    # Now $A is the matrix [ [ 1, 2, 3 ], [ 7, 5, 6 ] ]
+
+    # Also, the method returns the value that is replaced.
+    $x = $A->set(8, [ 1, 3 ]);
+    # Now $A is [ [ 1, 2, 8 ], [ 7, 5, 6 ] ] and $x is 3.
+
+    # It is also OK to specify the indices as an array instead of an array reference
+    $A->set(7, 2, 1);
+
+=cut
+
+sub set {
+	my ($self, $value, @indices) = @_;
+	$value = Value::makeValue($value) unless Value::isValue($value);
+	my $dim = $self->degree;
+	@indices = @{ $indices[0] } if (ref $indices[0] eq 'ARRAY');
+	$self->Error("There should be $dim indices") unless $dim == @indices;
+	my $data = $self->{data};
+	my $i    = pop(@indices) - 1;
+	for (my $n = 0; @indices; $n++) {
+		my $j = shift(@indices) - 1;
+		$self->Error("The " . $self->NameForNumber($n + 1) . " index is outside of the array bounds")
+			if $j < 0 || $j >= scalar(@$data);
+		$data = $data->[$j]->{data};
+	}
+	$self->Error("The last index is outside of the array bounds")
+		if $i < 0 || $i >= scalar(@$data);
+	$self->Error("The new entry value should be " . $data->[$i]->showType . " not " . $value->showType)
+		unless $value->type eq $data->[$i]->type;
+	my $old = $data->[$i];
+	$data->[$i] = $value;
+	return $old;
+}
+
 # @@@ removeRow, removeColumn @@@
 # @@@ Minor @@@
 
