@@ -245,62 +245,67 @@ subtest 'Replace a value' => sub {
 	}, qr/Cannot replace a matrix entry with a Formula/, 'Check replaced value is not a Formula';
 
 subtest 'Submatrix' => sub {
-	my $A    = Matrix([ [ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ] ]);
-	my $s1   = $A->subMatrix([ 2 .. 3 ], [ 2 .. 4 ]);
-	my $sub1 = Matrix([ [ 6, 7, 8 ], [ 10, 11, 12 ] ]);
-	my $s2   = $A->subMatrix(2, 3);
-	my $sub2 = Matrix([ [ 1, 2, 4 ], [ 9, 10, 12 ] ]);
-	my $s3   = $A->subMatrix([ 3, 1, 2 ], [ 1, 4, 2 ]);
-	my $sub3 = Matrix([ [ 9, 12, 10 ], [ 1, 4, 2 ], [ 5, 8, 6 ] ]);
+	my $A = Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ]);
+	is $A->subMatrix([ 2 .. 3 ], [ 2 .. 4 ])->TeX, Matrix([ 6, 7, 8 ], [ 10, 11, 12 ])->TeX,
+		'Submatrix from specifing rows/cols to keep';
+	is $A->subMatrix(2, 3)->TeX, Matrix([ 1, 2, 4 ], [ 9, 10, 12 ])->TeX,
+		'Submatrix from specifing row/col to remove';
+	is $A->subMatrix([1], 0)->TeX, Matrix([ [ 1, 2, 3, 4 ] ])->TeX,
+		'Submatrix from specifing rows/cols with mixed syntax';
+	is $A->subMatrix([ 3, 1, 2 ], [ 1, 4, 2 ])->TeX, Matrix([ 9, 12, 10 ], [ 1, 4, 2 ], [ 5, 8, 6 ])->TeX,
+		'Submatrix from permuting rows and columns, droppping one column';
 
-	is $s1->TeX, $sub1->TeX, 'Finding a submatrix giving the rows/cols in ordered form.';
-	is $s2->TeX, $sub2->TeX, 'Finding a submatrix given the row/col to remove.';
-	is $s3->TeX, $sub3->TeX, 'Finding a submatrix with rearranging rows/cols.';
+	my $B = Matrix(2, 4, 6, 8);
+	is $B->subMatrix([ 1, 3 ])->TeX, Matrix(2, 6)->TeX,
+		'Submatrix of degree 1 matrix from specifing entries to keep';
+	is $B->subMatrix(2)->TeX, Matrix(2, 6, 8)->TeX, 'Submatrix of degree 1 matrix from specifing entry to remove';
 
-	my $B = Matrix([ 2, 4, 6, 8 ]);
+	my $C = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ]);
+	is $C->subMatrix(0, 1, [ 1, 3 ])->TeX, Matrix([ [ 4, 6 ] ], [ [ 10, 12 ] ])->TeX,
+		'Submatrix of degree 3 matrix from specifing indices to keep';
+	is $C->subMatrix(1, 2, 3)->TeX, Matrix([ [ [ 7, 8 ] ] ])->TeX,
+		'Submatrix of degree 3 matrix from specifing indices to remove';
 
-	is $B->subMatrix([3])->TeX, Matrix([6])->TeX, 'Finding a submatrix of a 1D matrix by passing in arrayref';
-	is $B->subMatrix(3)->TeX, Matrix([ 2, 4, 8 ])->TeX,
-		'Finding a submatrix of a 1D matrix by passing in an integer';
-
-	my $B3     = Matrix([ [ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ] ]);
-	my $B3sub1 = Matrix([ [ [ 1, 3 ], [ 4, 6 ] ], [ [ 7, 9 ], [ 10, 12 ] ] ]);
-	my $B3sub2 = Matrix([ [ [ 7, 8 ] ] ]);
-	is $B3->subMatrix([ 1, 2 ], [ 1, 2 ], [ 1, 3 ])->TeX, $B3sub1->TeX,
-		'Finding a submatrix of a 3D matrix by specifying indices.';
-	is $B3->subMatrix(1, 2, 3)->TeX, $B3sub2->TeX,
-		'Finding a submatrix of a 3D matrix by specifying integers (indices to eliminate).';
+	like dies {
+		$A->subMatrix(1, 1, 1);
+	}, qr/There must be 2 arguments/, 'check that error is thrown for too many arguments.';
+	like dies {
+		$A->subMatrix(1);
+	}, qr/There must be 2 arguments/, 'check that error is thrown for too few arguments.';
 
 	like dies {
 		$A->subMatrix(-1, 2);
-	}, qr/The input -?\d+ is not a valid index/, 'check that error is thrown for an invalid row.';
+	}, qr/The input -1 is not a valid index/, 'check that error is thrown for an invalid integer argument.';
 	like dies {
-		$A->subMatrix(10, 2);
-	}, qr/The input -?\d+ is not a valid index/, 'check that error is thrown for an invalid row.';
+		$A->subMatrix(1.5, 2);
+	}, qr/The input 1\.5 is not a valid index/, 'check that error is thrown for an invalid integer argument.';
 	like dies {
-		$A->subMatrix(2, -3);
-	}, qr/The input -?\d+ is not a valid index/, 'check that error is thrown for an invalid column.';
+		$A->subMatrix(1, 5);
+	}, qr/The input 5 is not a valid index/, 'check that error is thrown for an invalid integer argument.';
 	like dies {
-		$A->subMatrix(2, 10);
-	}, qr/The input -?\d+ is not a valid index/, 'check that error is thrown for an invalid column.';
-
+		$A->subMatrix(1, 'a');
+	}, qr/The input a is not a valid index/, 'check that error is thrown for an invalid integer argument.';
 	like dies {
-		$A->subMatrix(1.1, 2);
-	}, qr/The input -?[\.\d]+ is not a valid index/, 'check that error is thrown for an non integer row.';
-	like dies {
-		$A->subMatrix(1, 2.5);
-	}, qr/The input -?[\.\d]+ is not a valid index/, 'check that error is thrown for an non integer column.';
-
+		$A->subMatrix(1, []);
+	}, qr/Cannot use empty array reference for indices to keep/,
+		'check that error is thrown for empty array reference argument.';
 	like dies {
 		$A->subMatrix([ 1, 1.1, 2 ], [ 2, 3 ]);
-	}, qr/The input -?[\.\d]+ is not a valid index/, 'check that error is thrown for an non integer row.';
+	}, qr/The input 1\.1 is not a valid index/, 'check that error is thrown for an non integer row.';
 	like dies {
 		$A->subMatrix([ 1, 2 ], [ 2.5, 3 ]);
-	}, qr/The input -?[\.\d]+ is not a valid index/, 'check that error is thrown for an non integer column.';
-
+	}, qr/The input 2\.5 is not a valid index/, 'check that error is thrown for an non integer column.';
 	like dies {
-		$A->subMatrix([ 1, 2, 3 ], 2);
-	}, qr/The inputs must both be integers or array refs/, 'check that error is thrown for mixing inputs.';
+		$A->subMatrix([ 0, 1 ], [ 2, 3 ]);
+	}, qr/The input 0 is not a valid index/, 'check that error is thrown for zero in an array ref.';
+	like dies {
+		$A->subMatrix([ -2, 1 ], [ 2, 3 ]);
+	}, qr/The input -2 is not a valid index/,
+		'check that error is thrown for integer in an array ref that is out of bounds.';
+	like dies {
+		$A->subMatrix([ 5, 1 ], [ 2, 3 ]);
+	}, qr/The input 5 is not a valid index/,
+		'check that error is thrown for integer in an array ref that is out of bounds.';
 };
 
 subtest 'Construct an identity matrix' => sub {

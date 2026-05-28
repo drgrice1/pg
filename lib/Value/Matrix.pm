@@ -1392,65 +1392,75 @@ sub replace {
 
 =head3 C<subMatrix>
 
-Return a submatrix of a Matrix.  If the indices are array refs, the given rows and
-columns (or more) of the Matrix are returned as a Matrix of the same degree.
+Return a submatrix of a Matrix.  If the indices are array referencess, the rows, columns,
+etc. that are indicated are kept and used to return a Matrix of the same degree. Other
+rows, columns, etc. are removed.
 
-Note this can be used to permute rows/columns/etc by including all rows/columns/etc
+Note this can be used to permute rows, columns, etc by specifying all rows, columns, etc.
 in a different order.
 
-If the input are integers, then return submatrix with those rows/columns/etc removed.
+Each input can be an integer instead of an array reference, and the complement of that
+integer is used for the rows to keep. In other words, using an integer for input indicates
+that you wish for that one row, column, etc. to be removed. Using 0 as an input indicates
+that all rows, columns, etc. for that dimension should be kept.
+
+You can mix and match using array references and integers.
 
 Usage:
 
     $A = Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ]);
     $A->subMatrix([2 .. 3], [2 .. 4]);     # returns Matrix([ 6, 7, 8 ], [ 10, 11, 12 ])
     $A->subMatrix(2, 3);                   # returns Matrix([ 1, 2, 4 ], [ 9, 10, 12 ]);
+    $A->subMatrix([1], 0);                 # returns Matrix([ [ 1, 2, 3, 4 ] ]);
     $A->subMatrix([3, 1, 2], [1, 4, 2]);   # returns Matrix([ 9, 12, 10 ], [ 1, 4, 2 ] ,[ 5, 8, 6 ]);
 
 This can also be used on Matrix objects that are not degree 2.
 
-    $B = Matrix([ 2, 4, 6, 8 ]);
-    $B->subMatrix([1, 3]);   # returns Matrix([2, 6]);
-    $B->subMatrix(2);        # returns Matrix([2, 6, 8]);
+    $B = Matrix(2, 4, 6, 8);
+    $B->subMatrix([1, 3]);   # returns Matrix(2, 6);
+    $B->subMatrix(2);        # returns Matrix(2, 6, 8);
 
-    $C = Matrix([ [ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ] ]);
-    $C->subMatrix([1, 2], [1, 2], [1, 3]);    # returns Matrix([ [ [ 1, 3 ], [ 4, 6 ] ], [ [ 7, 9 ], [ 10, 12 ] ] ]);
+    $C = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ]);
+    $C->subMatrix(0, 1, [1, 3]);              # returns Matrix([ [ 4, 6 ] ], [ [ 10, 12 ] ]);
     $C->subMatrix(1, 2, 3);                   # returns Matrix([ [ [ 7, 8 ] ] ]);
 
 =cut
 
 sub subMatrix {
 	my ($self, @ind) = @_;
-	my @dim = $self->dimensions;
-	my @indices;    # Indices to keep for submatrix.
+	my @dim    = $self->dimensions;
+	my $degree = scalar @dim;
 
-	# check that the input is appropriate for the size of the matrix.
-	Value::Error("The indices must be array refs the same size as the dimension of the matrix.") unless $#dim == $#ind;
+	# indices to keep for submatrix
+	my @indices;
 
-	# check that inputs are either all integers or all array refs
-	my @index_types = keys %{ { map { ref $_, 1 } @ind } };
+	# check that the input is appropriate for the size of the matrix
+	Value::Error("There must be $degree arguments") unless $#dim == $#ind;
 
-	Value::Error('The inputs must both be integers or array refs.')
-		unless scalar(@index_types) == 1 && ($index_types[0] eq '' || $index_types[0] eq 'ARRAY');
-
+	# convert any integer arguments to array references
 	for my $i (0 .. $#ind) {
-		if ($index_types[0] eq '') {    # input is a scalar (integer)
+		if (ref $ind[$i] eq 'ARRAY') {
+			push @indices, $ind[$i];
+		} else {
+			# check that $ind[$i] is an integer in the appopriate range
 			Value::Error("The input $ind[$i] is not a valid index")
-				unless $ind[$i] >= 1 && $ind[$i] <= $dim[$i] && int($ind[$i]) == $ind[$i];
-			push(@indices, [ grep { $_ != $ind[$i] } (1 .. $dim[$i]) ]);
+				unless $ind[$i] =~ /^\d+$/ && $ind[$i] >= 0 && $ind[$i] <= $dim[$i];
+			push @indices, [ grep { $_ != $ind[$i] } (1 .. $dim[$i]) ];
+		}
+	}
 
-		} elsif ($index_types[0] eq 'ARRAY') {    # input are array refs
-			for my $j (@{ $ind[$i] }) {
-				Value::Error("The input $j is not a valid index") unless int($j) == $j && $j >= 1 && $j <= $dim[$i];
-			}
-			push(@indices, $ind[$i]);
+	# check that all indices are integers in the appropriate range and that all array references are nonempty
+	for my $i (0 .. $#indices) {
+		Value::Error("Cannot use empty array reference for indices to keep") unless (@{ $indices[$i] });
+		for my $j (@{ $indices[$i] }) {
+			Value::Error("The input $j is not a valid index") unless $j =~ /^\d+$/ && $j >= 1 && $j <= $dim[$i];
 		}
 	}
 
 	sub extractElements {
 		my ($self, $indices, $elements) = @_;
 
-		# These need to be copies of the array arguments.
+		# these need to be copies of the array arguments
 		my @ind_copy      = @$indices;
 		my @elements_copy = @$elements;
 
