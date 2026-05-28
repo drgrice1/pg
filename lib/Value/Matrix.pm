@@ -1056,7 +1056,7 @@ perform row operations.
 
 =item * Row Swap
 
-The method C<< Value::Matrix->E(n,[i, j]) >> returns the n by n elementary matrix that 
+The method C<< Value::Matrix->E(n,[i, j]) >> returns the n by n elementary matrix that
 upon right multiplication performs the row swap between rows C<i> and C<j>.
 
 Usage:
@@ -1077,8 +1077,8 @@ where the size of the resulting matrix is the number of rows of C<$A>.
 
 =item * Multiply a row by a constant
 
-The method C<< Value::Matrix->E(n, [i], k) >> returns the n by n elementary matrix that upon 
-right multiplication will multiply a row C<i>, by constant C<k>. 
+The method C<< Value::Matrix->E(n, [i], k) >> returns the n by n elementary matrix that upon
+right multiplication will multiply a row C<i>, by constant C<k>.
 
 Usage:
 
@@ -1479,6 +1479,60 @@ sub subMatrix {
 	}
 
 	return $self->extractElements([], \@indices);
+}
+
+=head3 C<removeRow>
+
+Return a new Matrix, where a row has been removed from a Matrix. This is only valid for Matrix
+Math Objects with degree 2 or higher. Removing a ith "row" from a Matrix of degree 3 or higher
+means to remove all entries with first index i.
+
+Usage:
+
+    $A = Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ], [13, 14, 15, 16]);
+    $A->removeRow(3);   # returns Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [13, 14, 15, 16]);
+
+    $B = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ]);
+    $B->removeRow(2);   # returns Matrix([ [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] ]);
+
+=cut
+
+sub removeRow {
+	my ($self, $r) = @_;
+	my @dim    = $self->dimensions;
+	my $degree = scalar @dim;
+	Value::Error("removeRow cannot be used on a Matrix of degree 1") if $degree == 1;
+	my @indices = map { [ 1 .. $_ ] } @dim;
+	Value::Error("Can only remove rows 1 through $indices[0][-1]")
+		unless $r >= 1 && $r <= $indices[0][-1] && $r =~ /^\d+$/;
+	return $self->subMatrix([ grep { $_ != $r } @{ $indices[0] } ], @indices[ 1 .. $#indices ]);
+}
+
+=head3 C<removeColumn>
+
+Return a new Matrix, where a column has been removed from a Matrix. This is only valid for Matrix
+Math Objects with degree 2 or higher. Removing a jth "column" from a Matrix of degree 3 or higher
+means to remove all entries with second index j.
+
+Usage:
+
+    $A = Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ], [13, 14, 15, 16]);
+    $A->removeColumn(3);   # returns Matrix([ 1, 2, 4 ], [ 5, 6, 8 ], [ 9, 10, 12 ], [13, 14, 16]);
+
+    $B = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ]);
+    $B->removeColumn(2);   # returns Matrix([ [ 1, 2, 3 ] ], [ [ 7, 8, 9 ] ]);
+
+=cut
+
+sub removeColumn {
+	my ($self, $r) = @_;
+	my @dim    = $self->dimensions;
+	my $degree = scalar @dim;
+	Value::Error("removeColumn cannot be used on a Matrix of degree 1") if $degree == 1;
+	my @indices = map { [ 1 .. $_ ] } @dim;
+	Value::Error("Can only remove columns 1 through $indices[1][-1]")
+		unless $r >= 1 && $r <= $indices[1][-1] && $r =~ /^\d+$/;
+	return $self->subMatrix($indices[0], [ grep { $_ != $r } @{ $indices[1] } ], @indices[ 2 .. $#indices ]);
 }
 
 # @@@ assign @@@
