@@ -240,6 +240,9 @@ subtest 'Replace a value' => sub {
 	like dies {
 		$B->replace(Point(1, 2), [ 2, 1 ]);
 	}, qr/The new entry value should be a Number not a Point/, 'Check replaced value has the same type';
+	like dies {
+		$B->replace(Formula('x'), [ 2, 1 ]);
+	}, qr/Cannot replace a matrix entry with a Formula/, 'Check replaced value is not a Formula';
 
 };
 

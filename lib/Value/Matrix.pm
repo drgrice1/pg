@@ -1368,20 +1368,22 @@ Usage:
 sub replace {
 	my ($self, $value, @indices) = @_;
 	$value = Value::makeValue($value) unless Value::isValue($value);
+	$self->Error('Cannot replace a matrix entry with a Formula') if Value::isFormula($value);
 	my $dim = $self->degree;
 	@indices = @{ $indices[0] } if (ref $indices[0] eq 'ARRAY');
 	$self->Error("There should be $dim indices") unless $dim == @indices;
 	my $data = $self->{data};
 	my $i    = pop(@indices) - 1;
+
 	for (my $n = 0; @indices; $n++) {
 		my $j = shift(@indices) - 1;
-		$self->Error("The " . $self->NameForNumber($n + 1) . " index is outside of the array bounds")
+		$self->Error('The ' . $self->NameForNumber($n + 1) . ' index is outside of the array bounds')
 			if $j < 0 || $j >= scalar(@$data);
 		$data = $data->[$j]->{data};
 	}
-	$self->Error("The last index is outside of the array bounds")
+	$self->Error('The last index is outside of the array bounds')
 		if $i < 0 || $i >= scalar(@$data);
-	$self->Error("The new entry value should be " . $data->[$i]->showType . " not " . $value->showType)
+	$self->Error('The new entry value should be ' . $data->[$i]->showType . ' not ' . $value->showType)
 		unless $value->type eq $data->[$i]->type;
 	my $old = $data->[$i];
 	$data->[$i] = $value;
