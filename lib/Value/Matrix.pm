@@ -117,7 +117,7 @@ Examples:
 
 =head3 Update values (these need to be added)
 
-    set(value, [ i, j, ... ])
+    replace(value, [ i, j, ... ])
         For a degree n matrix, the array reference for the second entry should have n elements.
         The entry at that location will be replaced with value.
 
@@ -1346,26 +1346,26 @@ sub element {
 	return $M->extract(@_);
 }
 
-=head3 C<set>
+=head3 C<replace>
 
-Set a specific element to some value.
+Replace an entry with a new element and return the replaced element.
 
 Usage:
 
     $A = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ]);
-    $A->set(7, [ 2, 1 ]);
+    $A->replace(7, [ 2, 1 ]);
     # Now $A is the matrix [ [ 1, 2, 3 ], [ 7, 5, 6 ] ]
 
     # Also, the method returns the value that is replaced.
-    $x = $A->set(8, [ 1, 3 ]);
+    $x = $A->replace(8, [ 1, 3 ]);
     # Now $A is [ [ 1, 2, 8 ], [ 7, 5, 6 ] ] and $x is 3.
 
     # It is also OK to specify the indices as an array instead of an array reference
-    $A->set(7, 2, 1);
+    $A->replace(7, 2, 1);
 
 =cut
 
-sub set {
+sub replace {
 	my ($self, $value, @indices) = @_;
 	$value = Value::makeValue($value) unless Value::isValue($value);
 	my $dim = $self->degree;

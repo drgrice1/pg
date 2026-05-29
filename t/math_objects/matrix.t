@@ -215,30 +215,30 @@ subtest 'Extract a column' => sub {
 	}, qr/Column must be a positive integer/, 'Test that an error is thrown for passing a non-positive integer';
 };
 
-subtest 'Set a value' => sub {
+subtest 'Replace a value' => sub {
 	my $A = Matrix([ 1, 2, 3 ]);
 	my $B = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ]);
 	my $C = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ]);
 	my $D = Matrix([ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 5, 6 ], [ 7, 8 ] ] ]);
 
-	is $A->set(9, [2]),         2, 'Replace an element from a degree 1 matrix, returning replaced element';
-	is $A->TeX,                 Matrix([ 1, 9, 3 ])->TeX, 'Replace an element from a degree 1 matrix';
-	is $B->set(9, [ 2, 1 ]),    4, 'Replace an element from a degree 2 matrix, returning replaced element';
-	is $B->TeX,                 Matrix([ [ 1, 2, 3 ], [ 9, 5, 6 ] ])->TeX, 'Replace an element from a degree 2 matrix';
-	is $C->set(9, 2, 1),        4, 'Replace an element from a degree 2 matrix, returning replaced element';
-	is $C->TeX,                 Matrix([ [ 1, 2, 3 ], [ 9, 5, 6 ] ])->TeX, 'Replace an element from a degree 2 matrix';
-	is $D->set(9, [ 2, 1, 2 ]), 6, 'Replace an element from a degree 3 matrix, returning replaced element';
+	is $A->replace(9, [2]),      2, 'Replace an element from a degree 1 matrix, returning replaced element';
+	is $A->TeX,                  Matrix([ 1, 9, 3 ])->TeX, 'Replace an element from a degree 1 matrix';
+	is $B->replace(9, [ 2, 1 ]), 4, 'Replace an element from a degree 2 matrix, returning replaced element';
+	is $B->TeX,                  Matrix([ [ 1, 2, 3 ], [ 9, 5, 6 ] ])->TeX, 'Replace an element from a degree 2 matrix';
+	is $C->replace(9, 2, 1),     4, 'Replace an element from a degree 2 matrix, returning replaced element';
+	is $C->TeX,                  Matrix([ [ 1, 2, 3 ], [ 9, 5, 6 ] ])->TeX, 'Replace an element from a degree 2 matrix';
+	is $D->replace(9, [ 2, 1, 2 ]), 6, 'Replace an element from a degree 3 matrix, returning replaced element';
 	is $D->TeX, Matrix([ [ [ 1, 2 ], [ 3, 4 ] ], [ [ 5, 9 ], [ 7, 8 ] ] ])->TeX,
 		'Replace an element from a degree 3 matrix';
 
 	like dies {
-		$B->set(10, [ 1, 2, 3 ]);
+		$B->replace(10, [ 1, 2, 3 ]);
 	}, qr/There should be 2 indices/, 'Check correct number of indices passed';
 	like dies {
-		$B->set(10, [ 3, 1 ]);
+		$B->replace(10, [ 3, 1 ]);
 	}, qr/The first index is outside of the array bounds/, 'Check index is within bounds';
 	like dies {
-		$B->set(Point(1, 2), [ 2, 1 ]);
+		$B->replace(Point(1, 2), [ 2, 1 ]);
 	}, qr/The new entry value should be a Number not a Point/, 'Check replaced value has the same type';
 
 };
