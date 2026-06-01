@@ -621,7 +621,7 @@ sub isRREF {
 		}
 	} else {
 		for my $row (@{ $self->{data} }) {
-			return 0 unless $row->isREF;
+			return 0 unless $row->isRREF;
 		}
 	}
 	return 1;
