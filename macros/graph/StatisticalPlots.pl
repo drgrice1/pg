@@ -29,7 +29,7 @@ The statistical plots available are
 
 First, start with a C<StatPlot> object as in
 
-    loadMacros('StatisticsPlots.pl');
+    loadMacros('StatisticalPlots.pl');
     $stat_plot = StatPlot(
         xmin        => -1,
         xmax        => 8,
@@ -770,10 +770,9 @@ sub add_piechart {
 				1.1 * $options{radius} * sin($alpha),
 				$options{labels}->[$_],
 				(0 <= $alpha && $alpha < $pi / 4)
-					|| (7 * $pi / 4 < $alpha && $alpha < 2 * $pi) ? (h_align => 'left')
-				: $pi / 4 <= $alpha < 3 * $pi / 4     ? (v_align => 'bottom')
-				: 3 * $pi / 4 <= $alpha < 5 * $pi / 4 ? (h_align => 'right')
-				:                                       (v_align => 'top')
+					|| (7 * $pi / 4 < $alpha && $alpha < 2 * $pi) ? (h_align => 'left')   : $pi / 4 <= $alpha
+					&& $alpha < 3 * $pi / 4                       ? (v_align => 'bottom') : 3 * $pi / 4 <= $alpha
+					&& $alpha < 5 * $pi / 4                       ? (h_align => 'right')  : (v_align => 'top')
 			);
 		}
 		$theta += $delta_theta;
