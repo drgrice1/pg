@@ -1,17 +1,17 @@
 
 =head1 NAME
 
-StatisticalPlots.pl - A macro to create dynamic statistics plots to include in PG problems. 
+StatisticalPlots.pl - A macro to create dynamic statistics plots to include in PG problems.
 
 =head1 DESCRIPTION
 
-This macro includes a number of methods to include statistical plots in PG problems. 
-This is based on L<plots.pl> which will draw in either C<TikZ> or C<JSXGraph> format with the 
-default for the former to be used for hardcopy and the latter for HTML output.  
+This macro includes a number of methods to include statistical plots in PG problems.  This is based
+on L<plots.pl> which will draw using either C<TikZ> (default for hardcopy) or C<JSXGraph> (default
+for HTML).
 
 The statistical plots available are
 
-=over 
+=over
 
 =item Box Plots
 
@@ -27,122 +27,121 @@ The statistical plots available are
 
 =head2 USAGE
 
-First, start with a C<StatPlot> object as in 
+First, start with a C<StatPlot> object as in
 
-    loadMacros('StatisticsPlots.pl');
+    loadMacros('StatisticalPlots.pl');
     $stat_plot = StatPlot(
         xmin        => -1,
-        xmax        =>  8,
+        xmax        => 8,
         ymin        => -1.5,
-        ymax        =>  10,
-        xtick_delta =>  1,
+        ymax        => 10,
+        xtick_delta => 1,
         ytick_delta => 4,
-        aria_label => 'Bar plot of a set of data'
+        aria_label  => 'Bar plot of a set of data'
     );
 
 The options for C<StatPlot> are identical to that of a C<Plot> object and all options are in the
-L<Axes Object|Plots::Axes>. Note that each of the x- and y-axes have separate options and 
-each option is preceded with a C<x> or C<y>. 
+L<Axes Object|Plots::Axes>.  Note that each of the x- and y-axes have separate options and each
+option is preceded with an C<x> or C<y>.
 
 After a C<StatPlot> object is created then specific plots are added to the axes.  For example:
 
     $hist->add_barplot(
-        [ 1 .. 6 ], 
+        [ 1 .. 6 ],
         [3, 6, 7, 8, 4, 1],
         fill_color   => 'yellow',
         stroke_width => 1,
         bar_width    => 0.9
     );
 
-will add a barplot to the axes with heights defined in the second argument at 
-the x-locations C<(1..6)>. 
+will add a barplot to the axes with heights defined in the second argument at the x-locations
+C<(1..6)>.
 
-See below for more details about creating a barplot and its options. 
+See below for more details about creating a barplot and its options.
 
 =head1 PLOT ELEMENTS
 
-As mentioned above, a statistical plot is a set of axes with one or more plot objects such as 
-bar plots, box plots or scatter plots.  A C<StatPlot> must be created first and then one or more 
-of the following can be added. 
+A statistical plot is a set of axes with one or more plot objects such as bar plots, box plots or
+scatter plots.  A C<StatPlot> must be created first and then one or more of the following can be
+added.
 
 =head2 BAR PLOTS
 
-A bar plot can be added using the C<< $stat_plot->add_barplot >> method. 
+A bar plot can be added using the C<< $stat_plot->add_barplot >> method.
 
     $stat_plot->add_barplot($xdata, $ydata, %opts);
 
-This adds vertical bars (as the default) centered at the array reference C<$xdata> 
-with heights C<$ydata>, an array reference. 
+This adds vertical bars (as the default) centered at the values in the array reference C<$xdata>
+with heights from C<$ydata>, also an array reference.
 
 =head3 OPTIONS
 
-The options for the C<add_barplot> method are two fold.  The following are specific to changing
-the barplot, and the rest are passed along to C<add_rectangle>, which is a wrapper function for 
-C<add_dataset> which draws the bars. 
+There are two types of options for the C<add_barplot> method.  The following are specific to
+changing the barplot, and any more are passed along to C<add_rectangle>, which is a wrapper function
+for C<add_dataset> which draws the bars.
 
-The following are options for the barplot itself: 
+The following are options for the barplot itself:
 
-=over 
+=over
 
 =item orientation
 
-The C<orientation> option can take on values C<'vertical'> (default) or C<'horizontal'> to 
-create vertical or horizontal bars.  Above was an example with vertical bars and 
-an example with horizontal bars is
+The C<orientation> option can take values C<'vertical'> (default) or C<'horizontal'> to create
+vertical or horizontal bars.  Above was an example with vertical bars, and an example with
+horizontal bars is
 
     $hist->add_barplot(
-				[3, 6, 7, 8, 4, 1],
+        [3, 6, 7, 8, 4, 1],
         [ 1 .. 6 ],
-        orientation => 'horizontal',
-        fill_color => 'yellow',
-        stroke_width      => 1,
-        bar_width  => 0.9
+        orientation  => 'horizontal',
+        fill_color   => 'yellow',
+        stroke_width => 1,
+        bar_width    => 0.9
     );
 
 =item bar_width
 
-The option C<bar_width> is a number in the range [0,1] to give the relative width of the bar.  If 
-C<< bar_width => 1 >> (default), then there is no gap between bars.  In the example above, with 
-C<< bar_width => 0 >>.
+The option C<bar_width> is a number in the range [0,1] to give the relative width of the bar.  If
+C<< bar_width => 1 >> (default), then there is no gap between bars.
 
-=item fill_color 
+=item fill_color
 
-This is the color of the bars, which is passed to the C<add_dataset> method.  If this is included
-then C<fill_color> is set to C<'self'>, the natural way to fill a rectangle.  
+This is the color of the bars, which is passed to the C<add_dataset> method.  If this is not
+included, then C<fill_color> is set to C<'self'>, the natural way to fill a rectangle.
 
-See L<Color options|plots.pl/COLORS> for more details on specifying colors. 
+See L<Color options|plots.pl/COLORS> for more details on specifying colors.
 
 =item stroke_color
 
-This is an alias for the C<color> option of the C<add_dataset> method.  This 
-specifies the color of the boundary of the rectangle. See L<Color options|plots.pl/COLORS> 
-for more details on specifying colors. 
+This is an alias for the C<color> option of the C<add_dataset> method.  This specifies the color of
+the boundary of the rectangle.  See L<Color options|plots.pl/COLORS> for more details on specifying
+colors.
 
 =back
 
-Any remaining options are passed to C<add_rectangle> which has the same options as C<add_dataset>, 
-however. See L<Options for add_dataset|plots.pl/DATASET OPTIONS> for other options.
+Any remaining options are passed to C<add_rectangle> which has the same options as C<add_dataset>.
+See L<Options for add_dataset|plots.pl/DATASET OPTIONS> for other options.
 
 =head2 HISTOGRAMS
 
-A L<histogram|https://en.wikipedia.org/wiki/Histogram> is added to a C<StatPlot> 
-with the `add_histogram` method. The general form is 
+A L<histogram|https://en.wikipedia.org/wiki/Histogram> is added to a C<StatPlot> with the
+`add_histogram` method.  The general form is
 
     $stat_plot->add_histogram($data, %options);
 
-where C<$data> is an array ref of univariate data.  The C<%options> include both options
-for the histogram like number of bins as well as options for the bars. 
+where C<$data> is an array ref of univariate data.  The C<%options> include both options for the
+histogram (e.g. number of bins) as well as options for the bars.
 
-An example is performed using the C<urand> function from C<PGstatisticalmacros.pl> which
-produces normally distributed random variables. 
+Here is an example using the C<urand> function from C<PGstatisticalmacros.pl> which produces
+normally distributed random variables.
 
     macros('StatisticalPlots.pl', 'PGstatisticsmacros.pl');
-    @data = urand(30, 9, 50, 6); # create 50 random variables with mean 30 and std. dev of 9.
+    @data = urand(30, 9, 50, 6);   # create 50 random variables with mean 30 and std. dev of 9.
     $stat_plot = StatPlot(
-        xmin => 0,
-        xmax => 65,
-        ymin => 0,
-        ymax => 12, 
+        xmin        => 0,
+        xmax        => 65,
+        ymin        => 0,
+        ymax        => 12,
         xtick_delta => 10,
         ytick_delta => 2
     );
@@ -152,16 +151,16 @@ produces normally distributed random variables.
         max        => 60,
         bins       => 10,
         fill_color => 'lightgreen',
-        width => 1
+        width      => 1
     );
 
-The first argument to C<add_histogram> is an array ref of univariate data. 
+The first argument to C<add_histogram> is an array ref of univariate data.
 
 =head3 Options
 
 The following are options specific to histograms.
 
-=over 
+=over
 
 =item min
 
@@ -173,43 +172,42 @@ The right edge of the rightmost box.  If not defined, the maximum of C<$data> is
 
 =item bins
 
-The number of bins/boxes to use for the histogram.  This must be an integer greater
-than 0.  If not defined, the default value of 10 is used.
+The number of bins/boxes to use for the histogram.  This must be an integer greater than 0.  If not
+defined, the default value of 10 is used.
 
-=item normalize 
+=item normalize
 
-If the value of 0 (default) is used, the height of the bars is the count of the number
-of points within each bin.   If the value is 1, then the heights are scaled so 
-the total height of the bars is 1.  
+If 0 is used (the default), the height of the bars is the count of the number of points within each
+bin.  If the value is 1, then the heights are scaled so the total height of the bars is 1.
 
-=item fill_color 
+=item fill_color
 
-This is the color of the bars, which is passed to the C<add_dataset> method.  If this is included
-then C<fill_color> is set to C<'self'>, the natural way to fill a rectangle.  
+This is the color of the bars, which is passed to the C<add_dataset> method.  If this is not
+included, then C<fill_color> is set to C<'self'>, the natural way to fill a rectangle.
 
-See L<Color options|plots.pl/COLORS> for more details on specifying colors. 
+See L<Color options|plots.pl/COLORS> for more details on specifying colors.
 
-=item stroke_color 
+=item stroke_color
 
-This sets the color of the boundary of the rectangle and the whiskers.  It is an alias for 
-the C<color> option of L<add_dataset|plots.pl/DATASET OPTIONS>.  See L<COLORS|plots.pl> 
-for options to change the color. 
+This sets the color of the boundary of the rectangle and the whiskers.  It is an alias for the
+C<color> option of L<add_dataset|plots.pl/DATASET OPTIONS>.  See L<COLORS|plots.pl> for options to
+change the color.
 
 =item stroke_width
 
-This sets the width of the boundary of the rectangle and the whiskers. This is an alias for 
-the C<width> option of L<add_dataset|plots.pl>. 
+This sets the width of the boundary of the rectangle and the whiskers.  This is an alias for the
+C<width> option of L<add_dataset|plots.pl>.
 
 =back
 
-The rest of the options are passed through to the L<add_barplot|BAR PLOTS> method in which the
-fill color and opacity as well as the stroke color and width.  See both L<add_barplot>
-and L<add_dataset options|plots.pl/DATASET OPTIONS> for more details. 
+The rest of the options are passed through to the L<add_barplot|BAR PLOTS> method in which the fill
+color and opacity as well as the stroke color and width.  See both L<add_barplot> and
+L<add_dataset options|plots.pl/DATASET OPTIONS> for more details.
 
 =head2 BOX PLOTS
 
-A box plot (also called a box and whiskers plot) can be created with the C<add_boxplot> method.  
-If one performs
+A box plot (also called a box and whiskers plot) can be created with the C<add_boxplot> method.  If
+one performs
 
    $stat_plot->add_boxplot($data, %options);
 
@@ -217,55 +215,54 @@ or if one has multiple box plots
 
    $stat_plot->add_boxplot([$data1, $data2, ...], %options);
 
-where C<$data> (or C<$data1>, C<$data2>, ...) is an array ref of univariate data 
-or a hash ref of the boxplot characteristics, then a box plot is created using 
-the five number summary (minimum, first quartile, median, third quartile, maximum) 
-of the data.  These values are calculated using the C<five_point_summary> 
-function from C<PGstatisticsmacros.pl>.  An example of creating a boxplot with an 
-array reference of univariate data is 
+where C<$data> (or C<$data1>, C<$data2>, ...) is an array ref of univariate data or a hash ref of
+the boxplot characteristics, then a box plot is created using the five number summary (minimum,
+first quartile, median, third quartile, maximum) of the data.  These values are calculated using
+the C<five_point_summary> function from C<PGstatisticsmacros.pl>.  An example of creating a boxplot
+with an array reference of univariate data is
 
-    @data = urand(100,25,75,6);
+    @data = urand(100, 25, 75, 6);
 
     $boxplot = StatPlot(
-        xmin         => 0,
-        xmax         => 200,
-        xtick_delta  =>  25,
-        show_grid    =>  0,
-        ymin         => -5,
-        ymax         =>  25,
-        yvisible     =>  0,
-        aspect_ratio => 4,
+        xmin            => 0,
+        xmax            => 200,
+        xtick_delta     => 25,
+        show_grid       => 0,
+        ymin            => -5,
+        ymax            => 25,
+        yvisible        => 0,
+        aspect_ratio    => 4,
         rounded_corners => 1
     );
 
     $boxplot->add_boxplot(~~@data, fill_color => 'LightBlue', stroke_width => 1);
 
-and as with other methods in this macro, one can pass options to the characteristic of the 
-box plot (like fill color or stroke color and width) within the C<add_boxplot> method. 
+and as with other methods, one can pass options for the box plot (like fill color, stroke color,
+and width) within the C<add_boxplot> method.
 
-If C<$data> is a hash reference, it must contains the fields C<min, q1, median, q3, max> that are used to
-define the boxplot.  Optionally, one may also include the field C<outliers> which is an array 
-ref of values which will be plotted beyond the whiskers. 
+If C<$data> is a hash reference, it must contains the fields C<min, q1, median, q3, max> that are
+used to define the boxplot.  Optionally, one may also include the field C<outliers> which is an
+array ref of values which will be plotted beyond the whiskers.
 
-An example of this is 
+An example of this is
 
     $params = {
-        min    => random(150, 175, 5),
-        q1     => random(180, 225, 5),
-        median => random(250, 275, 5),
-        q3     => random(280, 320, 10),
-        max    => random(325, 350, 5),
+        min      => random(150, 175, 5),
+        q1       => random(180, 225, 5),
+        median   => random(250, 275, 5),
+        q3       => random(280, 320, 10),
+        max      => random(325, 350, 5),
         outliers => [115,130]
     };
 
     $boxplot = StatPlot(
         xmin         => 100,
         xmax         => 400,
-        xtick_delta  =>  50,
-        show_grid    =>  0,
+        xtick_delta  => 50,
+        show_grid    => 0,
         ymin         => -5,
-        ymax         =>  25,
-        yvisible     =>  0,
+        ymax         => 25,
+        yvisible     => 0,
         aspect_ratio => 4
     );
 
@@ -273,90 +270,87 @@ An example of this is
 
 =head3 Options
 
-The following are options to the C<add_boxplot> method. 
+The following are options to the C<add_boxplot> method.
 
-=over 
+=over
 
 =item orientation
 
-This is the direction of the box plot and can take on values 'horizontal' (default)
-or 'vertical'. 
+This is the direction of the box plot and can take on values 'horizontal' (default) or 'vertical'.
 
 =item box_center
 
-The location of the center of the box.  This is optional and if not defined will center the 
-box between the axis and the edge of the plot. 
+The location of the center of the box.  This is optional and if not defined will center the box
+between the axis and the edge of the plot.
 
-If multiple box plots are included, this option will be created to equally space the 
-box plots between the axis and the edge of the plot.  If included, this option must be an 
-array reference of values (in the x-direction for vertical plots and y-direction for horizontal).  
+If multiple box plots are included, this option will be created to equally space the box plots
+between the axis and the edge of the plot.  If included, this option must be an array reference of
+values (in the x-direction for vertical plots and y-direction for horizontal).
 
-    box_center => [3,6,9]
+    box_center => [3, 6, 9]
 
-as an example. 
+as an example.
 
-=item box_width 
+=item box_width
 
-The width of the box in the direction perpendicular to the orientation.  If not defined, it
-will take the value of 0.5 times the space between the axis and the edge of the plot. 
+The width of the box in the direction perpendicular to the orientation.  If not defined, it will
+take the value of 0.5 times the space between the axis and the edge of the plot.
 
-If multiple box plots are defined, this should only be a single value.  
+If multiple box plots are defined, this should only be a single value.
 
 =item whisker_cap
 
-Value of 0 (default) or 1.  If this value is 1, a short line will be added that is 
-perpendicular to the whiskers on the boxplot with relative size C<cap_width>.
+Value of 0 (default) or 1.  If this value is 1, a short line will be added that is perpendicular to
+the whiskers on the boxplot with relative size C<cap_width>.
 
 =item cap_width
 
 The width of the cap as a fraction of the box width.  Default value is 0.2.
 
-=item outlier_mark 
+=item outlier_mark
 
-The shape of the mark to use for outliers.  Default is 'plus'.  See 
-L<options for add_dataset|plots.pl/DATASET OPTIONS>  for other mark options.
+The shape of the mark to use for outliers.  Default is 'plus'.
+See L<options for add_dataset|plots.pl/DATASET OPTIONS> for other mark options.
 
-=item fill_color 
+=item fill_color
 
-This is the color of the bars, which is passed to the C<add_dataset> method.  
-If this is included then C<fill_color> is set to C<'self'>, the natural way to 
-fill a rectangle.  
+This is the color of the bars, which is passed to the C<add_dataset> method.  If this is not
+included, then C<fill_color> is set to C<'self'>, the natural way to fill a rectangle.
 
-See L<Color options|plots.pl/COLORS> for more details on specifying colors. 
+See L<Color options|plots.pl/COLORS> for more details on specifying colors.
 
-=item stroke_color 
+=item stroke_color
 
-This sets the color of the boundary of the rectangle and the whiskers.  It is an 
-alias for the C<color> option of L<add_dataset|plots.pl/DATASET OPTIONS>.  
-See L<COLORS|plots.pl> for options to change the color. 
+This sets the color of the boundary of the rectangle and the whiskers.  It is an alias for the
+C<color> option of L<add_dataset|plots.pl/DATASET OPTIONS>.  See L<COLORS|plots.pl> for options to
+change the color.
 
 =item stroke_width
 
-This sets the width of the boundary of the rectangle and the whiskers. This is 
-an alias for the C<width> option of L<add_dataset|plots.pl>. 
+This sets the width of the boundary of the rectangle and the whiskers.  This is an alias for the
+C<width> option of L<add_dataset|plots.pl>.
 
 =back
 
-As with other methods in the macro, other options can be passed along to 
-L<add_rectangle|plots.pl/PLOT RECTANGLES> and C<add_dataset> which are used in the macro. 
+As with other methods, other options can be passed to L<add_rectangle|plots.pl/PLOT RECTANGLES> and
+C<add_dataset>.
 
 
 =head2 SCATTER PLOTS
 
-To produce a scatter plot, use the C<add_scatterplot> method to a C<StatPlot>.  The general 
-form is 
+To produce a scatter plot, use the C<add_scatterplot> method to a C<StatPlot>.  The general form is
 
     $stat_plot->add_scatterplot($data, %options);
 
-where the dataset in C<$data> is an array reference of C<x, y> pairs as an array 
-reference.  For example,
+where the dataset in C<$data> is an array reference of C<x, y> pairs as an array reference.  For
+example,
 
     $stat_plot = StatPlot(
-        xmin => -1,
-        xmax => 15,
+        xmin        => -1,
+        xmax        => 15,
         xtick_delta => 5,
-        ymin => -1,
-        ymax => 15,
+        ymin        => -1,
+        ymax        => 15,
         ytick_delta => 5,
     );
 
@@ -364,80 +358,78 @@ reference.  For example,
 
     $stat_plot->add_scatterplot($data, marks => 'diamond', mark_size => 5, color => 'orange');
 
-This method is simply a wrapper for the C<add_dataset> method where the defaults are different.  
+This method is simply a wrapper for the C<add_dataset> method where the defaults are different.
 
-=over 
+=over
 
 =item linestyle
 
-The C<linestyle> option is set to 'none', so that lines are not drawn between the points. 
+The C<linestyle> option is set to 'none', so that lines are not drawn between the points.
 
 =item marks
 
-The C<marks> is default to 'circle'.  See L<Options for add_dataset|plots.pl/DATASET OPTIONS> 
-for other mark options. 
+The C<marks> is default to 'circle'.  See L<Options for add_dataset|plots.pl/DATASET OPTIONS> for
+other mark options.
 
 =item mark_size
 
-The C<mark_size> is default to 3.  
+The C<mark_size> is default to 3.
 
 =item mark_color
 
-This changes the mark color and  is an alias for the C<color> option.  See L<COLORS/plots.pl> 
-for options to change the color. 
+This changes the mark color and is an alias for the C<color> option.  See L<COLORS/plots.pl> for
+options to change the color.
 
 =back
 
-If more that one dataset is to be plotted, simply call the C<add_scatterplot> method multiple 
-times.  This can be done with a single C<add_dataset> method call, but this wrapper makes it 
-easier to set different options
+If more that one dataset is to be plotted, simply call the C<add_scatterplot> method multiple times.
+This can be done with a single C<add_dataset> method call, but this wrapper makes it easier to set
+different options.
 
 =head2 PIE CHARTS
 
-A pie chart is a circle that divided in to sectors whose size is proportional to an input array.  
-The sectors are generally given each a color and a label.   This method will also produce
-donut charts (or ring charts), which is a pie chart with a hole. 
+A pie chart is a circle that divided in to sectors whose size is proportional to an input array.
+The sectors are generally each given a color and a label.  This method can also produce donut
+charts (or ring charts), which is a pie chart with a hole.
 
-The general form is 
+The general form is
 
     $stat_plot->add_piechart($data, %options);
 
-where $data is an array reference of values. 
+where $data is an array reference of values.
 
 The following are the options:
 
-=over 
+=over
 
 =item center
 
-The center of the circle as an array reference.  The default value is C<[0,0]>. 
+The center of the circle as an array reference.  The default value is C<[0,0]>.
 
 =item radius
 
-The radius of the circle.  The default value of C<4> is chosen to fit nicely with the 
-default values of the bounding box of the C<StatPlot> which ranges from -5 to 5
-in both the x- and y-directions. 
+The radius of the circle.  The default value of C<4> is chosen to fit nicely with the default values
+of the bounding box of the C<StatPlot> which ranges from -5 to 5 in both the x- and y-directions.
 
-=item inner_radius 
+=item inner_radius
 
-If you desire a donut chart or ring chart, set this to a value less than the radius. 
-The default value is 0. 
+If you desire a donut chart or ring chart, set this to a value less than the radius.  The default
+value is 0.
 
 =item angle_offset
 
-The first sector by default starts at angle 0 (from the positive horizontal axis) 
-in degrees.  Use this to change this.
+The first sector by default starts at angle 0 (from the positive horizontal axis) in degrees, but
+can be changed with this option.
 
-=item fill_colors 
+=item fill_colors
 
-This is either the name of a color palette (as a string), an array reference of 
-colors or a hash reference for the name of the color palette and number of colors 
-to generate (not available for all palettes). If the length of this array reference 
-is smaller than the C<$data> array reference, then the colors will be cycled.  
-The default is to use the 'default' color palette.  See L<COLOR PALETTES> for 
-more information.
+This is either the name of a color palette (as a string), an array reference of colors, or a hash
+reference for the name of the color palette and number of colors to generate (not available for all
+palettes).  If the length of this array reference is smaller than the C<$data> array reference, then
+the colors will be cycled.  The default is to use the 'default' color palette.  See
+L<COLOR PALETTES> for more information.
 
-Usage:  the following are possible options. 
+The following are possible options.
 
     fill_colors => 'rainbow'   # generates the rainbow palette
 
@@ -445,68 +437,63 @@ Usage:  the following are possible options.
 
     fill_colors => {palette_name => 'random', num_colors => 7}
 
-=item color_sectors 
+=item color_sectors
 
-If this is 1 (default), then colors are used for the pie chart.  If 0, then the 
-sectors are not filled.  See C<color_palette> for selecting colors. 
+If this is 1 (default), then colors are used for the pie chart.  If 0, then the sectors are not
+filled.  See C<color_palette> for selecting colors.
 
-=item sector_labels 
+=item sector_labels
 
-The labels for the sector as a array reference of strings or values.  The default is for
-no labels.  If this is used, the length of this must be the same as the C<$data> array 
-reference. 
+The labels for the sector as a array reference of strings or values.  The default is for no labels.
+If this is used, the length of this must be the same as the C<$data> array reference.
 
-=back 
+=back
 
 =head2 COLOR PALETTES
 
 The color palettes for the bar plots and pie charts can be select from the C<color_palette>
-function.  This allows a number of built-in/generated color palettes.  To get an 
-array reference of either named or generated colors: 
+function.  This allows a number of built-in/generated color palettes.  To get an array reference
+of either named or generated colors:
 
     color_palette($name, $n);
 
-For example, 
+For example,
 
     color_palette('rainbow');
 
-returns the 6 colors of the rainbow.  Some of the palettes have fixed numbers of colors, 
-whereas others have variable numbers.  If C<num_colors> is not defined, then some palettes 
-return a fixed number (like 'rainbow') and if the C<num_colors> is needed, then the 
-default of 10 is assumed. 
+returns the 6 colors of the rainbow.  Some of the palettes have fixed numbers of colors, whereas
+others have variable numbers.  If C<num_colors> is not defined, then some palettes return a fixed
+number (like 'rainbow') and if the C<num_colors> is needed, then the default of 10 is assumed.
 
 =head3 PALETTE NAMES
 
-=over 
+=over
 
 =item rainbow
 
-The colors of the rainbow from violet to red.   The C<num_colors> options is ignored. 
+The colors of the rainbow from violet to red.  The C<num_colors> options is ignored.
 
 =item random
 
-This will return C<num_colors> random colors from the defined SVG colors.  
+This will return C<num_colors> random colors from the defined SVG colors.
 
 =item reds
 
-This will return a selection of red colors. If C<num_colors> is passed in, 
-the number is ignored. 
+This will return a selection of red colors.  If C<num_colors> is passed in, the number is ignored.
 
 =item blues
 
-This will return a selection of blue colors.  If C<num_colors> is passed in, 
-the number is ignored. 
+This will return a selection of blue colors.  If C<num_colors> is passed in, the number is ignored.
 
 =item greens
 
-This will return a selection of green colors.  If C<num_colors> is passed in, 
-the number is ignored. 
+This will return a selection of green colors.  If C<num_colors> is passed in, the number is ignored.
 
-=back 
+=back
 
 =head2 LEGENDS
 
-TODO: A legend is helpful for some plots.  
+TODO: A legend is helpful for some plots.
 
 =cut
 
@@ -783,10 +770,9 @@ sub add_piechart {
 				1.1 * $options{radius} * sin($alpha),
 				$options{labels}->[$_],
 				(0 <= $alpha && $alpha < $pi / 4)
-					|| (7 * $pi / 4 < $alpha && $alpha < 2 * $pi) ? (h_align => 'left')
-				: $pi / 4 <= $alpha < 3 * $pi / 4     ? (v_align => 'bottom')
-				: 3 * $pi / 4 <= $alpha < 5 * $pi / 4 ? (h_align => 'right')
-				:                                       (v_align => 'top')
+					|| (7 * $pi / 4 < $alpha && $alpha < 2 * $pi) ? (h_align => 'left')   : $pi / 4 <= $alpha
+					&& $alpha < 3 * $pi / 4                       ? (v_align => 'bottom') : 3 * $pi / 4 <= $alpha
+					&& $alpha < 5 * $pi / 4                       ? (h_align => 'right')  : (v_align => 'top')
 			);
 		}
 		$theta += $delta_theta;
