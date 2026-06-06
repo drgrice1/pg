@@ -702,11 +702,7 @@ window.graphTool = (containerId, options) => {
 						newContent.classList.add('gt-message-content');
 						setTimeout(() => newContent.classList.add('gt-message-content', 'gt-message-fade'));
 
-						if (window.MathJax) {
-							MathJax.startup.promise = MathJax.startup.promise.then(() =>
-								MathJax.typesetPromise([newContent])
-							);
-						}
+						if (window.MathJax) MathJax.typesetPromise([newContent]);
 					}
 
 					resolve();

@@ -89,9 +89,7 @@
 				setInnerHTML(knowlBody, knowl.dataset.knowlContents);
 
 				// If we are using MathJax, then render math content.
-				if (window.MathJax) {
-					MathJax.startup.promise = MathJax.startup.promise.then(() => MathJax.typesetPromise([knowlBody]));
-				}
+				if (window.MathJax) MathJax.typesetPromise?.([knowlBody]);
 			} else if (knowl.dataset.knowlUrl) {
 				// Retrieve url content.
 				fetch(knowl.dataset.knowlUrl)
@@ -104,11 +102,7 @@
 							setInnerHTML(knowlBody, data);
 						}
 						// If we are using MathJax, then render math content.
-						if (window.MathJax) {
-							MathJax.startup.promise = MathJax.startup.promise.then(() =>
-								MathJax.typesetPromise([knowlBody])
-							);
-						}
+						if (window.MathJax) MathJax.typesetPromise?.([knowlBody]);
 					})
 					.catch((err) => {
 						knowlBody.textContent = `ERROR: ${err}`;

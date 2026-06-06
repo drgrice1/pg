@@ -212,7 +212,9 @@
 
 			this.button.addEventListener('show.bs.popover', () => {
 				this.regenPreview();
-				MathJax.startup.promise = MathJax.startup.promise.then(() => MathJax.typesetPromise(['.popover']));
+				setTimeout(() => {
+					MathJax.typesetPromise([this.popover.tip]).then(() => feedbackPopover.update());
+				});
 			});
 
 			// Refresh math in the popover when there is a keyup in the input.

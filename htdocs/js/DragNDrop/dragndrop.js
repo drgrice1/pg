@@ -382,11 +382,7 @@
 			else bucketPool.bucketContainer.append(this.el);
 
 			// Typeset any math content that may be in the added html.
-			if (window.MathJax) {
-				window.MathJax.startup.promise = window.MathJax.startup.promise.then(() =>
-					window.MathJax.typesetPromise([this.el])
-				);
-			}
+			if (window.MathJax) window.MathJax.typesetPromise?.([this.el]);
 
 			const options = {
 				group: { name: bucketPool.answerName },
