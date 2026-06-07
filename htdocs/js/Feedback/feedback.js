@@ -11,20 +11,10 @@
 		});
 		feedbackPopovers.push(feedbackPopover);
 
-		// Render MathJax previews.
-		if (window.MathJax) {
-			feedbackBtn.addEventListener('show.bs.popover', () => {
-				// The feedbackPopover.tip element is not yet available to work with, but will be immediately after this
-				// event fires, since Bootstrap sets it later in the same method in which this event is triggered. So
-				// delay until it is with a timeout. Note that this still occurs earlier than the shown.bs.popover
-				// event, and so prevents visual motion as the MathJax content is typeset and the popover resizes.
-				setTimeout(() => {
-					MathJax.typesetPromise([feedbackPopover.tip]).then(() => feedbackPopover.update());
-				});
-			});
-		}
+		feedbackBtn.addEventListener('inserted.bs.popover', () => {
+			// Render MathJax previews.
+			if (window.MathJax) MathJax.typesetPromise([feedbackPopover.tip]).then(() => feedbackPopover.update());
 
-		feedbackBtn.addEventListener('shown.bs.popover', () => {
 			// Execute javascript in the answer preview.
 			feedbackPopover.tip?.querySelectorAll('script').forEach((origScript) => {
 				const newScript = document.createElement('script');
