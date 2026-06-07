@@ -1260,11 +1260,11 @@ sub BM { MODES(TeX => '\\(',        HTML_MathJax => '\\(',    HTML => '', PTX =>
 sub EM { MODES(TeX => '\\)',        HTML_MathJax => '\\)',    HTML => '', PTX => '</m>'); };    # end math mode
 
 sub BDM {
-	MODES(TeX => '\\[', HTML_MathJax => '\\[', HTML => '<P ALIGN=CENTER>', PTX => '<me>');
+	MODES(TeX => '\\[', HTML_MathJax => '\\[', HTML => '<P ALIGN=CENTER>', PTX => '<md>');
 };                                                                                              #begin displayMath mode
 
 sub EDM {
-	MODES(TeX => '\\]', HTML_MathJax => '\\]', HTML => '</P>', PTX => '</me>');
+	MODES(TeX => '\\]', HTML_MathJax => '\\]', HTML => '</P>', PTX => '</md>');
 };                                                                                              #end displayMath mode
 
 sub LTS {
@@ -1950,7 +1950,7 @@ sub general_math_ev3 {
 			$alignment = ($alignment eq 'align') ? '' : " alignment=\"$alignment\"";
 			$out       = "<md${alignment}>\n$rows\n</md>";
 		} elsif ($mode eq 'display') {
-			$out = "<me>$in</me>";
+			$out = "<md>$in</md>";
 		}
 	} elsif ($displayMode eq "HTML") {
 		$in_delim = HTML::Entities::encode_entities($in_delim);
