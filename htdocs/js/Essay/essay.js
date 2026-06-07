@@ -51,7 +51,7 @@
 					button.addEventListener(
 						'inserted.bs.popover',
 						() => {
-							MathJax.typesetPromise([popover.tip]);
+							MathJax.typesetPromise?.([popover.tip]);
 						},
 						{ once: true }
 					);

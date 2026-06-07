@@ -215,7 +215,7 @@
 			});
 
 			this.button.addEventListener('inserted.bs.popover', () => {
-				MathJax.typesetPromise([this.popover.tip]);
+				MathJax.typesetPromise?.([this.popover.tip]);
 			});
 
 			// Refresh math in the popover when there is a keyup in the input.
@@ -286,7 +286,7 @@
 			if (this.renderingMode === 'LATEX') this.mviewer.textContent = `\\(${text}\\)`;
 			else this.mviewer.textContent = `\`${text}\``;
 
-			MathJax.typesetPromise([this.mviewer]);
+			MathJax.typesetPromise?.([this.mviewer]);
 		}
 
 		// Create a category from the locale js.  Each category is implemented using bootstraps tab feature.  The
