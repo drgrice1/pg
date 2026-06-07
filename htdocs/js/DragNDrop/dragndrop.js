@@ -411,7 +411,7 @@
 			this.sortable = Sortable.create(this.ddList, options);
 		}
 
-		htmlBucket(label, removable, indices) {
+		htmlBucket(label, removable, indices = []) {
 			const bucketElement = document.createElement('div');
 			bucketElement.classList.add('dd-bucket');
 
