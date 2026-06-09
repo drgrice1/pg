@@ -11,16 +11,10 @@
 		});
 		feedbackPopovers.push(feedbackPopover);
 
-		// Render MathJax previews.
-		if (window.MathJax) {
-			feedbackBtn.addEventListener('show.bs.popover', () => {
-				MathJax.startup.promise = MathJax.startup.promise.then(() =>
-					MathJax.typesetPromise(['.popover-body']).then(() => feedbackPopover.update())
-				);
-			});
-		}
+		feedbackBtn.addEventListener('inserted.bs.popover', () => {
+			// Render MathJax previews.
+			if (window.MathJax) MathJax.typesetPromise?.([feedbackPopover.tip]).then(() => feedbackPopover.update());
 
-		feedbackBtn.addEventListener('shown.bs.popover', () => {
 			// Execute javascript in the answer preview.
 			feedbackPopover.tip?.querySelectorAll('script').forEach((origScript) => {
 				const newScript = document.createElement('script');
