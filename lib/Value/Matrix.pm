@@ -1056,7 +1056,7 @@ perform row operations.
 
 =item * Row Swap
 
-The method C<< Value::Matrix->E(n,[i, j]) >> returns the n by n elementary matrix that 
+The method C<< Value::Matrix->E(n,[i, j]) >> returns the n by n elementary matrix that
 upon right multiplication performs the row swap between rows C<i> and C<j>.
 
 Usage:
@@ -1077,8 +1077,8 @@ where the size of the resulting matrix is the number of rows of C<$A>.
 
 =item * Multiply a row by a constant
 
-The method C<< Value::Matrix->E(n, [i], k) >> returns the n by n elementary matrix that upon 
-right multiplication will multiply a row C<i>, by constant C<k>. 
+The method C<< Value::Matrix->E(n, [i], k) >> returns the n by n elementary matrix that upon
+right multiplication will multiply a row C<i>, by constant C<k>.
 
 Usage:
 
@@ -1390,6 +1390,152 @@ sub replace {
 	return $old;
 }
 
+=head3 C<subMatrix>
+
+Return a submatrix of a Matrix.  If the indices are array referencess, the rows, columns,
+etc. that are indicated are kept and used to return a Matrix of the same degree. Other
+rows, columns, etc. are removed.
+
+Note this can be used to permute rows, columns, etc by specifying all rows, columns, etc.
+in a different order.
+
+Each input can be an integer instead of an array reference, and the complement of that
+integer is used for the rows to keep. In other words, using an integer for input indicates
+that you wish for that one row, column, etc. to be removed. Using 0 as an input indicates
+that all rows, columns, etc. for that dimension should be kept.
+
+You can mix and match using array references and integers.
+
+Usage:
+
+    $A = Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ]);
+    $A->subMatrix([2 .. 3], [2 .. 4]);     # returns Matrix([ 6, 7, 8 ], [ 10, 11, 12 ])
+    $A->subMatrix(2, 3);                   # returns Matrix([ 1, 2, 4 ], [ 9, 10, 12 ]);
+    $A->subMatrix([1], 0);                 # returns Matrix([ [ 1, 2, 3, 4 ] ]);
+    $A->subMatrix([3, 1, 2], [1, 4, 2]);   # returns Matrix([ 9, 12, 10 ], [ 1, 4, 2 ] ,[ 5, 8, 6 ]);
+
+This can also be used on Matrix objects that are not degree 2.
+
+    $B = Matrix(2, 4, 6, 8);
+    $B->subMatrix([1, 3]);   # returns Matrix(2, 6);
+    $B->subMatrix(2);        # returns Matrix(2, 6, 8);
+
+    $C = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ]);
+    $C->subMatrix(0, 1, [1, 3]);              # returns Matrix([ [ 4, 6 ] ], [ [ 10, 12 ] ]);
+    $C->subMatrix(1, 2, 3);                   # returns Matrix([ [ [ 7, 8 ] ] ]);
+
+=cut
+
+sub subMatrix {
+	my ($self, @ind) = @_;
+	my @dim    = $self->dimensions;
+	my $degree = scalar @dim;
+
+	# indices to keep for submatrix
+	my @indices;
+
+	# check that the input is appropriate for the size of the matrix
+	Value::Error("There must be $degree arguments") unless $#dim == $#ind;
+
+	# convert any integer arguments to array references
+	for my $i (0 .. $#ind) {
+		if (ref $ind[$i] eq 'ARRAY') {
+			push @indices, $ind[$i];
+		} else {
+			# check that $ind[$i] is an integer in the appopriate range
+			Value::Error("The input $ind[$i] is not a valid index")
+				unless $ind[$i] =~ /^\d+$/ && $ind[$i] >= 0 && $ind[$i] <= $dim[$i];
+			push @indices, [ grep { $_ != $ind[$i] } (1 .. $dim[$i]) ];
+		}
+	}
+
+	# check that all indices are integers in the appropriate range and that all array references are nonempty
+	for my $i (0 .. $#indices) {
+		Value::Error("Cannot use empty array reference for indices to keep") unless (@{ $indices[$i] });
+		for my $j (@{ $indices[$i] }) {
+			Value::Error("The input $j is not a valid index") unless $j =~ /^\d+$/ && $j >= 1 && $j <= $dim[$i];
+		}
+	}
+
+	sub extractElements {
+		my ($self, $indices, $elements) = @_;
+
+		# these need to be copies of the array arguments
+		my @ind_copy      = @$indices;
+		my @elements_copy = @$elements;
+
+		my $ind = shift @elements_copy;
+		push(@ind_copy, [ 1 .. scalar(@$ind) ]);
+
+		my @M;
+		for my $i (@$ind) {
+			push(@M,
+				ref $self->element($i) eq 'Value::Matrix'
+				? $self->element($i)->extractElements(\@ind_copy, \@elements_copy)
+				: $self->element($i));
+		}
+
+		return $self->make($self->context, @M);
+	}
+
+	return $self->extractElements([], \@indices);
+}
+
+=head3 C<removeRow>
+
+Return a new Matrix, where a row has been removed from a Matrix. This is only valid for Matrix
+Math Objects with degree 2 or higher. Removing a ith "row" from a Matrix of degree 3 or higher
+means to remove all entries with first index i.
+
+Usage:
+
+    $A = Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ], [13, 14, 15, 16]);
+    $A->removeRow(3);   # returns Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [13, 14, 15, 16]);
+
+    $B = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ]);
+    $B->removeRow(2);   # returns Matrix([ [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] ]);
+
+=cut
+
+sub removeRow {
+	my ($self, $r) = @_;
+	my @dim    = $self->dimensions;
+	my $degree = scalar @dim;
+	Value::Error("removeRow cannot be used on a Matrix of degree 1") if $degree == 1;
+	my @indices = map { [ 1 .. $_ ] } @dim;
+	Value::Error("Can only remove rows 1 through $indices[0][-1]")
+		unless $r >= 1 && $r <= $indices[0][-1] && $r =~ /^\d+$/;
+	return $self->subMatrix([ grep { $_ != $r } @{ $indices[0] } ], @indices[ 1 .. $#indices ]);
+}
+
+=head3 C<removeColumn>
+
+Return a new Matrix, where a column has been removed from a Matrix. This is only valid for Matrix
+Math Objects with degree 2 or higher. Removing a jth "column" from a Matrix of degree 3 or higher
+means to remove all entries with second index j.
+
+Usage:
+
+    $A = Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ], [13, 14, 15, 16]);
+    $A->removeColumn(3);   # returns Matrix([ 1, 2, 4 ], [ 5, 6, 8 ], [ 9, 10, 12 ], [13, 14, 16]);
+
+    $B = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ]);
+    $B->removeColumn(2);   # returns Matrix([ [ 1, 2, 3 ] ], [ [ 7, 8, 9 ] ]);
+
+=cut
+
+sub removeColumn {
+	my ($self, $r) = @_;
+	my @dim    = $self->dimensions;
+	my $degree = scalar @dim;
+	Value::Error("removeColumn cannot be used on a Matrix of degree 1") if $degree == 1;
+	my @indices = map { [ 1 .. $_ ] } @dim;
+	Value::Error("Can only remove columns 1 through $indices[1][-1]")
+		unless $r >= 1 && $r <= $indices[1][-1] && $r =~ /^\d+$/;
+	return $self->subMatrix($indices[0], [ grep { $_ != $r } @{ $indices[1] } ], @indices[ 2 .. $#indices ]);
+}
+
+# @@@ assign @@@
 # @@@ removeRow, removeColumn @@@
 # @@@ Minor @@@
 

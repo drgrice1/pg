@@ -243,7 +243,125 @@ subtest 'Replace a value' => sub {
 	like dies {
 		$B->replace(Formula('x'), [ 2, 1 ]);
 	}, qr/Cannot replace a matrix entry with a Formula/, 'Check replaced value is not a Formula';
+};
 
+subtest 'Submatrix' => sub {
+	my $A = Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ]);
+	is $A->subMatrix([ 2 .. 3 ], [ 2 .. 4 ])->TeX, Matrix([ 6, 7, 8 ], [ 10, 11, 12 ])->TeX,
+		'Submatrix from specifing rows/cols to keep';
+	is $A->subMatrix(2, 3)->TeX, Matrix([ 1, 2, 4 ], [ 9, 10, 12 ])->TeX,
+		'Submatrix from specifing row/col to remove';
+	is $A->subMatrix([1], 0)->TeX, Matrix([ [ 1, 2, 3, 4 ] ])->TeX,
+		'Submatrix from specifing rows/cols with mixed syntax';
+	is $A->subMatrix([ 3, 1, 2 ], [ 1, 4, 2 ])->TeX, Matrix([ 9, 12, 10 ], [ 1, 4, 2 ], [ 5, 8, 6 ])->TeX,
+		'Submatrix from permuting rows and columns, droppping one column';
+
+	my $B = Matrix(2, 4, 6, 8);
+	is $B->subMatrix([ 1, 3 ])->TeX, Matrix(2, 6)->TeX,
+		'Submatrix of degree 1 matrix from specifing entries to keep';
+	is $B->subMatrix(2)->TeX, Matrix(2, 6, 8)->TeX, 'Submatrix of degree 1 matrix from specifing entry to remove';
+
+	my $C = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ]);
+	is $C->subMatrix(0, 1, [ 1, 3 ])->TeX, Matrix([ [ 4, 6 ] ], [ [ 10, 12 ] ])->TeX,
+		'Submatrix of degree 3 matrix from specifing indices to keep';
+	is $C->subMatrix(1, 2, 3)->TeX, Matrix([ [ [ 7, 8 ] ] ])->TeX,
+		'Submatrix of degree 3 matrix from specifing indices to remove';
+
+	like dies {
+		$A->subMatrix(1, 1, 1);
+	}, qr/There must be 2 arguments/, 'check that error is thrown for too many arguments.';
+	like dies {
+		$A->subMatrix(1);
+	}, qr/There must be 2 arguments/, 'check that error is thrown for too few arguments.';
+
+	like dies {
+		$A->subMatrix(-1, 2);
+	}, qr/The input -1 is not a valid index/, 'check that error is thrown for an invalid integer argument.';
+	like dies {
+		$A->subMatrix(1.5, 2);
+	}, qr/The input 1\.5 is not a valid index/, 'check that error is thrown for an invalid integer argument.';
+	like dies {
+		$A->subMatrix(1, 5);
+	}, qr/The input 5 is not a valid index/, 'check that error is thrown for an invalid integer argument.';
+	like dies {
+		$A->subMatrix(1, 'a');
+	}, qr/The input a is not a valid index/, 'check that error is thrown for an invalid integer argument.';
+	like dies {
+		$A->subMatrix(1, []);
+	}, qr/Cannot use empty array reference for indices to keep/,
+		'check that error is thrown for empty array reference argument.';
+	like dies {
+		$A->subMatrix([ 1, 1.1, 2 ], [ 2, 3 ]);
+	}, qr/The input 1\.1 is not a valid index/, 'check that error is thrown for an non integer row.';
+	like dies {
+		$A->subMatrix([ 1, 2 ], [ 2.5, 3 ]);
+	}, qr/The input 2\.5 is not a valid index/, 'check that error is thrown for an non integer column.';
+	like dies {
+		$A->subMatrix([ 0, 1 ], [ 2, 3 ]);
+	}, qr/The input 0 is not a valid index/, 'check that error is thrown for zero in an array ref.';
+	like dies {
+		$A->subMatrix([ -2, 1 ], [ 2, 3 ]);
+	}, qr/The input -2 is not a valid index/,
+		'check that error is thrown for integer in an array ref that is out of bounds.';
+	like dies {
+		$A->subMatrix([ 5, 1 ], [ 2, 3 ]);
+	}, qr/The input 5 is not a valid index/,
+		'check that error is thrown for integer in an array ref that is out of bounds.';
+};
+
+subtest 'Remove row' => sub {
+	my $A = Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ], [ 13, 14, 15, 16 ]);
+	is $A->removeRow(3)->TeX, Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 13, 14, 15, 16 ])->TeX,
+		'Remove a row from a degree 2 Matrix';
+
+	my $B = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ]);
+	is $B->removeRow(2)->TeX, Matrix([ [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] ])->TeX, 'Remove a row from a degree 3 Matrix';
+
+	my $C = Matrix(1, 2, 3);
+	like dies {
+		$C->removeRow(1);
+	}, qr/cannot be used on a Matrix of degree 1/,
+		'check that error is thrown if removeRow used on degree 1 Matrix';
+	like dies {
+		$A->removeRow(0);
+	}, qr/Can only remove rows 1 through 4/, 'check that error is thrown for bad row specification';
+	like dies {
+		$A->removeRow(5);
+	}, qr/Can only remove rows 1 through 4/, 'check that error is thrown for bad row specification';
+	like dies {
+		$A->removeRow(1.5);
+	}, qr/Can only remove rows 1 through 4/, 'check that error is thrown for bad row specification';
+	like dies {
+		$A->removeRow('a');
+	}, qr/Can only remove rows 1 through 4/, 'check that error is thrown for bad row specification';
+};
+
+subtest 'Remove column' => sub {
+	my $A = Matrix([ 1, 2, 3, 4 ], [ 5, 6, 7, 8 ], [ 9, 10, 11, 12 ], [ 13, 14, 15, 16 ]);
+	is $A->removeColumn(3)->TeX, Matrix([ 1, 2, 4 ], [ 5, 6, 8 ], [ 9, 10, 12 ], [ 13, 14, 16 ])->TeX,
+		'Remove a column from a degree 2 Matrix';
+
+	my $B = Matrix([ [ 1, 2, 3 ], [ 4, 5, 6 ] ], [ [ 7, 8, 9 ], [ 10, 11, 12 ] ]);
+	is $B->removeColumn(2)->TeX, Matrix([ [ 1, 2, 3 ] ], [ [ 7, 8, 9 ] ])->TeX,
+		'Remove a column from a degree 3 Matrix';
+
+	my $C = Matrix(1, 2, 3);
+	like dies {
+		$C->removeColumn(1);
+	}, qr/cannot be used on a Matrix of degree 1/,
+		'check that error is thrown if removeColumn used on degree 1 Matrix';
+	like dies {
+		$A->removeColumn(0);
+	}, qr/Can only remove columns 1 through 4/, 'check that error is thrown for bad column specification';
+	like dies {
+		$A->removeColumn(5);
+	}, qr/Can only remove columns 1 through 4/, 'check that error is thrown for bad column specification';
+	like dies {
+		$A->removeColumn(1.5);
+	}, qr/Can only remove columns 1 through 4/, 'check that error is thrown for bad column specification';
+	like dies {
+		$A->removeColumn('a');
+	}, qr/Can only remove columns 1 through 4/, 'check that error is thrown for bad column specification';
 };
 
 subtest 'Construct an identity matrix' => sub {
