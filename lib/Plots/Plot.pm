@@ -394,6 +394,24 @@ sub add_arc {
 	return $self->_add_arc(@data);
 }
 
+sub _add_rectangle {
+	my ($self, $pt0, $pt2, %options) = @_;
+	unless (ref($pt0) eq 'ARRAY' && @$pt0 == 2 && ref($pt2) eq 'ARRAY' && @$pt2 == 2) {
+		warn 'A rectangle requires two points defined by length two array references.';
+		return;
+	}
+	$options{fill} = 'self' if $options{fill_color} && !defined $options{fill};
+	return $self->_add_dataset($pt0, [ $pt2->[0], $pt0->[1] ], $pt2, [ $pt0->[0], $pt2->[1] ], $pt0, %options);
+}
+
+sub add_rectangle {
+	my ($self, @data) = @_;
+	if (ref($data[0]) eq 'ARRAY' && ref($data[0][0]) eq 'ARRAY') {
+		return [ map { $self->_add_rectangle(@$_) } @data ];
+	}
+	return $self->_add_rectangle(@data);
+}
+
 sub add_vectorfield {
 	my ($self, @options) = @_;
 	my $data = Plots::Data->new(name => 'vectorfield');

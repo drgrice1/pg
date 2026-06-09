@@ -5,7 +5,7 @@ plots.pl - A macro to create dynamic graphs to include in PG problems.
 
 =head1 DESCRIPTION
 
-This macro creates a Plots object that is used to add data of different
+This macro creates a Plot object that is used to add data of different
 elements of a 2D plot, then draw the plot. The plots can be drawn using different
 formats. Currently C<TikZ> (using PGFplots) and C<JSXGraph> graphics format are
 available. The default is to use C<JSXGraph> for HTML output and C<TikZ> for
@@ -16,7 +16,7 @@ options work with both.
 
 =head1 USAGE
 
-First create a Plots object:
+First create a Plot object:
 
     loadMacros('plots.pl');
     $plot = Plot(
@@ -304,12 +304,29 @@ on the circle that intersects the ray from the center of the circle pointing in
 the direction of the third point. Arcs always go in the counter clockwise
 direction.
 
-    $plot->add_arc([$start_x, $start_y], [$center_x, $center_y], [$end_x, $end_y], %options);
+    $plot->add_arc([$center_x, $center_y], [$start_x, $start_y], [$end_x, $end_y], %options);
     $plot->add_arc(
         [[$center_x1, $center_y1], [$start_x1, $start_y1], [$end_x1, $end_y1], %options1],
         [[$center_x2, $center_y2], [$start_x2, $start_y2], [$end_x2, $end_y2], %options2],
         ...
     );
+
+=head2 PLOT RECTANGLES
+
+A rectangle can be plotted with the C<< $plot->add_rectangle >> method. This
+method takes two points which are opposite corners of the rectangle. Multiple
+rectangles can be plotted at once by passing references to arrays of data for
+each rectangle.
+
+    $plot->add_rectangle([$lower_left_x, $lower_left_y], [$upper_right_x, $upper_right_y], %options);
+    $plot->add_rectangle(
+        [[$lower_left_x1, $lower_left_y1], [$upper_right_x1, $upper_right_y1], %options1],
+        [[$lower_left_x2, $lower_left_y2], [$upper_right_x2, $upper_right_y2], %options2],
+        ...
+    );
+
+Note that if the C<fill_color> option is set, then C<< fill => 'self' >> is
+automatically set, and so you do not need to specify that option.
 
 =head2 PLOT VECTOR FIELDS
 
@@ -592,7 +609,7 @@ A hash reference of options to add to the JSXGraph output of the associated obje
 
 =item tikz_options
 
-Additional pgfplots C<\addplot> options to be appeneded to the tikz output.
+Additional pgfplots C<\addplot> options to be appended to the tikz output.
 
 =back
 
@@ -709,7 +726,7 @@ Stamps can be added individually or multiple at once:
 
     # Add a single stamp.
     $plot->add_stamp($x1, $y1, symbol => $symbol, color => $color, radius => $radius);
-    # Add Multple stamps.
+    # Add Multiple stamps.
     $plot->add_stamp(
         [$x1, $y1, symbol => $symbol1, color => $color1, radius => $radius1],
         [$x2, $y2, symbol => $symbol2, color => $color2, radius => $radius2],

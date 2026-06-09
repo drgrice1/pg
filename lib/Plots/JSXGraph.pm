@@ -691,7 +691,7 @@ sub draw {
 		$self->{JS} .= "plot.createLabel($x, $y, '$str', $textOptions);";
 	}
 
-	# JSXGraph only produces HTML graphs and uses TikZ for hadrcopy.
+	# JSXGraph only produces HTML graphs and uses TikZ for hardcopy.
 	return $self->HTML;
 }
 
