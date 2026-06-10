@@ -1490,7 +1490,7 @@ sub ENDDOCUMENT {
 					'',
 					map {
 						'<li>' . knowlLink($_, value => pretty_print($PG->{PG_alias}{resource_list}{$_})) . '</li>'
-					}
+						}
 						sort keys %{ $PG->{PG_alias}{resource_list} }
 					)
 					. '</ul>'

@@ -151,7 +151,7 @@ sub HTML {
 	$self->{JS}             //= '';
 	$plots->{extra_js_code} //= '';
 
-	return <<~ "END_HTML";
+	return <<~"END_HTML";
 		$divs
 		<script>
 		(async () => {
@@ -460,7 +460,7 @@ sub add_multipath {
 	$self->{JS} .= "];\n";
 
 	if ($plotOptions) {
-		$self->{JS} .= <<~ "END_JS";
+		$self->{JS} .= <<~"END_JS";
 			const curve_$curve_name = board.create('curve', [[], []], $plotOptions);
 			curve_$curve_name.updateDataArray = function () {
 				this.dataX = [].concat(...$curve_parts_name.map((c) => c.points.map((p) => p.usrCoords[1]))$start_x);
@@ -469,7 +469,7 @@ sub add_multipath {
 			END_JS
 	}
 	if ($fillOptions) {
-		$self->{JS} .= <<~ "END_JS";
+		$self->{JS} .= <<~"END_JS";
 			const fill_$curve_name = board.create('curve', [[], []], $fillOptions);
 			fill_$curve_name.updateDataArray = function () {
 				this.dataX = [].concat(...$curve_parts_name.map((c) => c.points.map((p) => p.usrCoords[1])));

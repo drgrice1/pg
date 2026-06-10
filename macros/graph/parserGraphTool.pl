@@ -1168,7 +1168,7 @@ sub generateHTMLAnswerGraph {
 		$html . ($options{longDescription} =~ s/LONG-DESCRIPTION-ID/${ans_name}_${idSuffix}_details/r)
 	) if $options{longDescription};
 
-	return $html . main::tag('script', <<~ "END_SCRIPT");
+	return $html . main::tag('script', <<~"END_SCRIPT");
 		(() => {
 			const initialize = () => {
 				graphTool('${ans_name}_$idSuffix', {

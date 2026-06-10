@@ -32,7 +32,7 @@ sub new {
 	# than the pgfplots defaults, but is consistent with where JSXGraph places them, and is better than what pgplots
 	# does.  Axis tick labels are textual elements that should be in front of the things that are drawn and together
 	# with the "axis descriptions".
-	$image->addToPreamble( <<~ 'END_PREAMBLE');
+	$image->addToPreamble(<<~'END_PREAMBLE');
 		\usepgfplotslibrary{fillbetween}
 		\newsavebox{\axesBox}
 		\pgfplotsset{
@@ -330,7 +330,7 @@ sub generate_axes {
 	# The savebox only actually saves the main layer.  All other layers are actually drawn when the savebox is saved.
 	# So clipping of anything drawn on any other layer has to be done when things are drawn on the other layers.  The
 	# axisclippath is used for this. The main layer is clipped at the end when the savebox is used.
-	my $tikzCode = <<~ "END_TIKZ";
+	my $tikzCode = <<~"END_TIKZ";
 		\\pgfplotsset{set layers=${\($axes->style('axis_on_top') ? 'axis on top' : 'standard')}}%
 		$grid_color_def
 		\\savebox{\\axesBox}{
@@ -378,7 +378,7 @@ sub generate_axes {
 	$tikzCode .= $plotContents;
 	$tikzCode .= $plots->{extra_tikz_code} if $plots->{extra_tikz_code};
 
-	$tikzCode .= <<~ "END_TIKZ";
+	$tikzCode .= <<~"END_TIKZ";
 			\\end{axis}
 		}
 		\\pgfresetboundingbox
