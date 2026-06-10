@@ -298,7 +298,7 @@ sub use_svgMethod {
 	# Validate svgMethod against known SVG converters to prevent command injection.
 	my $method = $self->svgMethod;
 	if ($method eq 'dvisvgm') {
-		system WeBWorK::PG::IO::externalCommand('dvisvgm'), "$working_dir/image.dvi", '--no-fonts',
+		system WeBWorK::PG::IO::externalCommand('dvisvgm'), "$working_dir/image.dvi", '--no-fonts', '--verbosity=0',
 			"--output=$working_dir/image.svg";
 	} elsif ($method eq 'pdf2svg') {
 		system WeBWorK::PG::IO::externalCommand('pdf2svg'), "$working_dir/image.pdf", "$working_dir/image.svg";
