@@ -1504,7 +1504,7 @@ sub removeRow {
 	Value::Error("removeRow cannot be used on a Matrix of degree 1") if $degree == 1;
 	my @indices = map { [ 1 .. $_ ] } @dim;
 	Value::Error("Can only remove rows 1 through $indices[0][-1]")
-		unless $r >= 1 && $r <= $indices[0][-1] && $r =~ /^\d+$/;
+		unless $r =~ /^\d+$/ && $r >= 1 && $r <= $indices[0][-1];
 	return $self->subMatrix([ grep { $_ != $r } @{ $indices[0] } ], @indices[ 1 .. $#indices ]);
 }
 
@@ -1531,7 +1531,7 @@ sub removeColumn {
 	Value::Error("removeColumn cannot be used on a Matrix of degree 1") if $degree == 1;
 	my @indices = map { [ 1 .. $_ ] } @dim;
 	Value::Error("Can only remove columns 1 through $indices[1][-1]")
-		unless $r >= 1 && $r <= $indices[1][-1] && $r =~ /^\d+$/;
+		unless $r =~ /^\d+$/ && $r >= 1 && $r <= $indices[1][-1];
 	return $self->subMatrix($indices[0], [ grep { $_ != $r } @{ $indices[1] } ], @indices[ 2 .. $#indices ]);
 }
 
