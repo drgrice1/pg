@@ -476,8 +476,8 @@ subtest 'Multiply matrices' => sub {
 	my $prod1 = Matrix([ [ -8, 2, -6 ], [ -17, 8, -15 ], [ -26, 14, -24 ] ]);
 	my $C     = Matrix([ [ 1, -5, -2, -5 ],   [ 0, -5, 5, -4 ],     [ 4, 1, -1, 1 ] ]);
 	my $prod2 = Matrix([ [ 13, -12, 5, -10 ], [ 28, -39, 11, -34 ], [ 43, -66, 17, -58 ] ]);
-	ok $A*$B == $prod1, 'Checking the product of two 3 by 3 matrices';
-	ok $A*$C == $prod2, 'Checking the product of a 3 by 3 and 3 by 4 matrix';
+	ok $A * $B == $prod1, 'Checking the product of two 3 by 3 matrices';
+	ok $A * $C == $prod2, 'Checking the product of a 3 by 3 and 3 by 4 matrix';
 
 	like dies { $C * $A }, qr/Matrices of dimensions \d+x\d+ and \d+x\d+ can't be multiplied/,
 		'Test that multiplying row matrices of incompatible dimsensions throws an error';
@@ -486,15 +486,16 @@ subtest 'Multiply matrices' => sub {
 
 	my $row   = Matrix(1,  2,  3);
 	my $prod3 = Matrix(14, 32, 50);
-	ok $A*$row == $prod3, 'Multiply a 3 by 3 matrix and a row matrix of length 3 (the row is promoted to a matrix)';
+	ok $A * $row == $prod3,
+		'Multiply a 3 by 3 matrix and a row matrix of length 3 (the row is promoted to a matrix)';
 
 	my $col   = Matrix([ [1],  [2],  [3] ]);
 	my $prod4 = Matrix([ [14], [32], [50] ]);
-	ok $A*$col == $prod4, 'Multiply a 3 by 3 matrix and a column matrix of length 3';
+	ok $A * $col == $prod4, 'Multiply a 3 by 3 matrix and a column matrix of length 3';
 
 	my $v     = Vector(1,  2,  3);
 	my $prod5 = Vector(14, 32, 50);
-	ok $A*$v == $prod5, 'Multiply a 3 by 3 matrix and a vector of length 3';
+	ok $A * $v == $prod5, 'Multiply a 3 by 3 matrix and a vector of length 3';
 };
 
 subtest 'Construct an elementary matrix' => sub {

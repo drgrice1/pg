@@ -149,7 +149,7 @@ our @ISA = qw(PGApplet);
 sub new {
 	my $class = shift;
 	$class->SUPER::new(
-		objectText => << 'END_OBJECT_TEXT',
+		objectText => <<'END_OBJECT_TEXT',
 <div id="$appletName"
 	data-id="$appletName"
 	data-width="$width"
