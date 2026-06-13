@@ -1514,8 +1514,7 @@ sub tag {
 		$return .= $inner;
 		$return .= "$separator</$name>";
 	} else {
-		$return .= '>' unless ($main::displayMode eq 'PTX');
-		$return .= '/>' if ($main::displayMode eq 'PTX');
+		$return .= ($main::displayMode eq 'PTX') ? '/>' : $name =~ /^(br|col|hr|img|input)$/ ? '>' : "></$name>";
 	}
 	return $return;
 }
