@@ -270,8 +270,8 @@ sub Terminate {
 	}
 	$self->{block} = $prev;
 	if ($block->{stack}) {
-		if    (scalar(@{ $block->{stack} }) == 0) { $prev->popItem }
-		elsif ($block->{combine})                 { $prev->combineTopItems }
+		if    (!$block->{isContainer} && scalar(@{ $block->{stack} }) == 0) { $prev->popItem }
+		elsif ($block->{combine})                                           { $prev->combineTopItems }
 	}
 }
 
